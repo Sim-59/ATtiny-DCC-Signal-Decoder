@@ -1,14 +1,19 @@
 # DCC-Signaldekoder mit ATtiny85 
 Der Sketch verwendet die [NmraDcc-Bibliothek](https://github.com/mrrwa/NmraDcc) von [MRRWA](http://mrrwa.org/), die über die Arduino-Bibliotheksverwaltung eingebunden werden kann.
 
-Es wird das erweiterte DCC-Paket-Format für Zubehör - Extended Accessory Decoder Control Packet Format - verwendet. Damit sind in den meisten Systemen, z.B. DCC.Ex, 32 Signalbegriffe möglich.
-Zum Digispark-Board wurde einerseits eine kleine [Zusatzplatine](http://simandit.de/simwiki/doku.php?id=modellbahn:umbauten:dcc-dekoder#funktions-dekoder_mit_digispark-board) entwickelt, mit der die Anschaltung an das Gleissignal erfolgt. Mit Transistoren für die Funktionsausgänge wird die gleichgerichtete Gleisspannung geschaltet. Zur Erzeugung des ACK-Signals ist ein Anschluss vorgesehen, der während des Lesens der CVs verbunden werden kann. Bei einer zweiten Leiterplattenvariante für den DCC-Dekoder enthält auch den ATtiny85 und verwendet die ISP-Programmierung mit einem separaten Programmer.
+Es wird das erweiterte DCC-Paket-Format für Zubehör - Extended Accessory Decoder Control Packet Format - verwendet. Damit sind in den meisten Systemen, z.B. DCC-Ex, 32 Signalbegriffe möglich.
+Zum Digispark-Board wurde einerseits eine kleine [Zusatzplatine](http://simandit.de/simwiki/doku.php?id=modellbahn:umbauten:dcc-dekoder#funktions-dekoder_mit_digispark-board) entwickelt, mit der die Anschaltung an das Gleissignal erfolgt. Mit Transistoren für die Funktionsausgänge wird die gleichgerichtete Gleisspannung geschaltet. Zur Erzeugung des ACK-Signals ist ein Anschluss vorgesehen, der während des Lesens der CVs verbunden werden kann.\
+Eine zweite Leiterplattenvariante für den DCC-Dekoder enthält auch den ATtiny85 und muss über ISP mit einem separaten Programmer programmiert werden.
 
-Folgende Signal-Begriffe für eine Nebenbahn-Strecke sind möglich:
+Eine gute Informationsquelle zur Programmierung des ATtiny85 ist [hier](https://wolles-elektronikkiste.de/attiny85-84-45-44-25-24-programmieren) zu finden. 
+
+Die vorhandenen 4 Ports können statisch oder blinkend geschaltet werden.
+
+Folgende HL-Signal-Begriffe für eine Nebenbahn-Strecke sind mit dem Sketch möglich:
 - Hp0  - Halt
 - Hl1  - Fahrt mit Streckenhöchstgeschwindigkeit
 - Hl3a - Fahrt mit 40 km/h, dann mit Streckenhöchstgeschwindigkeit
-- Hl7  - Höchstgeschwindigkeit auf 40 km/h ermäßigen
+- Hl7  - Geschwindigkeit auf 40 km/h ermäßigen
 - Hl9a - Fahrt mit 40 km/h, Fahrt mit 40 km/h erwarten
 - Hl10 - Halt erwarten
 - Hl12a - Fahrt mit 40 km/h, Halt erwarten
