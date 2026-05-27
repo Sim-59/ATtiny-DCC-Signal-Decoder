@@ -7,9 +7,7 @@ Eine zweite Leiterplattenvariante für den DCC-Dekoder enthält auch den ATtiny8
 
 Eine gute Informationsquelle zur Programmierung des ATtiny85 ist [hier](https://wolles-elektronikkiste.de/attiny85-84-45-44-25-24-programmieren) zu finden. 
 
-Die vorhandenen 4 Ports können statisch oder blinkend geschaltet werden.
-
-Folgende HL-Signal-Begriffe für eine Nebenbahn-Strecke sind mit dem Sketch möglich:
+Folgende Signal-Begriffe sind mit den 4 LEDs (statisch und blinkend) für eine Nebenbahn-Strecke möglich:
 - Hp0  - Halt
 - Hl1  - Fahrt mit Streckenhöchstgeschwindigkeit
 - Hl3a - Fahrt mit 40 km/h, dann mit Streckenhöchstgeschwindigkeit
