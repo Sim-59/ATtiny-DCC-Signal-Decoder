@@ -3,9 +3,10 @@ Der Sketch verwendet die [NmraDcc-Bibliothek](https://github.com/mrrwa/NmraDcc) 
 
 Es wird das erweiterte DCC-Paket-Format für Zubehör - Extended Accessory Decoder Control Packet Format - verwendet. Damit sind in den meisten Systemen, z.B. DCC-Ex, 32 Signalbegriffe möglich.
 Zum Digispark-Board wurde einerseits eine kleine [Zusatzplatine](http://simandit.de/simwiki/doku.php?id=modellbahn:umbauten:dcc-dekoder#funktions-dekoder_mit_digispark-board) entwickelt, mit der die Anschaltung an das Gleissignal erfolgt. Mit Transistoren für die Funktionsausgänge wird die gleichgerichtete Gleisspannung geschaltet. Zur Erzeugung des ACK-Signals ist ein Anschluss vorgesehen, der während des Lesens der CVs verbunden werden kann.\
+Wegen der Bootzeit von 300 ms (nach Upgrade) bis 5 s (default), die nach jedem Power-On entsteht, nutze ich nur noch die ISP-Programmierung ohne Bootloader.\
 Eine zweite [Leiterplattenvariante](https://simandit.de/simwiki/doku.php?id=modellbahn:umbauten:dcc-dekoder#dcc-signal-dekoder_mit_attiny85) für den DCC-Dekoder enthält auch den ATtiny85 und muss über ISP mit einem separaten Programmer programmiert werden.
 
-Eine gute Informationsquelle zur Programmierung des ATtiny85 ist [hier](https://wolles-elektronikkiste.de/attiny85-84-45-44-25-24-programmieren) zu finden. 
+Eine gute Informationsquelle zur Programmierung des ATtiny85 ist [Wolles Elektronikkiste](https://wolles-elektronikkiste.de/attiny-mit-arduino-code-programmieren). 
 
 Folgende Signal-Begriffe sind mit den 4 LEDs (statisch und blinkend) für eine Nebenbahn-Strecke möglich:
 - Hp0  - Halt
