@@ -1,5 +1,5 @@
 // DCC extended Accessories decoder for simple HL-signals of DR
-// (c) Michael Hochmuth https://github.com/Sim-59                          2026-05-22
+// (c) Michael Hochmuth https://github.com/Sim-59                          2026-05-28
 // 4 output ports
 // CV reading at programming track (PT) is possible with a temporarily circuit for 60 mA load at one port
 //
@@ -37,18 +37,18 @@ NmraDcc Dcc;
 //#define PCB_11
 
 #if defined UNO
-  #define DCC_PIN         2		  // DCC signal
+  #define DCC_PIN         2     // DCC signal
   #define DCC_ACK_PIN     12    // 60 mA-circuit for CV reading
   #define PORT1_PIN       3     // red LED
   #define PORT2_PIN       4     // green LED
   #define PORT3_PIN       5     // yellow LED top
   #define PORT4_PIN       6     // yellow LED bottom
-  #define PROG_NEXT_PIN   8		  // programming port
+  #define PROG_NEXT_PIN   8	    // programming port
   #define DEBUG
   long int debounce;
   
-#elif defined PCB_10            // for ATtiny85 old PCB version MuFu4P 1.0
-  #define DCC_PIN         2		  // DCC signal
+#elif defined PCB_10            // for ATtiny85 with obsolate PCB version MuFu4P 1.0
+  #define DCC_PIN         2     // DCC signal
   #define DCC_ACK_PIN     3     // 60 mA-circuit can be temporarily connected to pin 4 for CV reading
   #define PORT1_PIN       0     // ws - red LED
   #define PORT2_PIN       1     // ge - green LED
@@ -276,7 +276,7 @@ void setup() {
   Dcc.pin(digitalPinToInterrupt(DCC_PIN), DCC_PIN, 1);
   Dcc.initAccessoryDecoder(MAN_ID_DIY, 10, cv29_Bits & FLAGS_OUTPUT_ADDRESS_MODE, 0);   // CV8=Manufacturer-ID=13, CV7=Manufacturer-VERS=10
   
-//  delay(200);  // use this if Micronucleus Bootloader is used.
+//  delay(200);  // uncomment this if Micronucleus Bootloader is used.
 
   #if defined DEBUG  
     Serial.println("Decoder initialized");
