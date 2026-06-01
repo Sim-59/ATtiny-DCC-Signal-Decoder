@@ -271,6 +271,8 @@ void setup() {
 
   pinMode(DCC_ACK_PIN, OUTPUT);
   digitalWrite(DCC_ACK_PIN, LOW);
+  
+  pinMode(DCC_PIN, INPUT);          // DCC Eingang
 
   // init NmraDcc library (PIN, manufacturer, version...) 
   Dcc.pin(digitalPinToInterrupt(DCC_PIN), DCC_PIN, 1);
