@@ -32,3 +32,11 @@ Es sind folgenden Konfigurationsvariablen (CVs) sind vorhanden:
   - Bit6=1 = Output Address Mode
   - Bit7=1 = Accessory Decoder Mode
 - CV34 Blinking periode - default 4 for 1 sec blink frequency (4 bit for blinking periode in s (0.25 ... 3.75 s))
+
+In der Variante mit SoftDim wird die Helligkeit von 3 Ports mit PWM des ATtiny realisiert, bei PB3 wird das PWM in der Loop-Schleife realisiert. Für die Dim-Werte gibt es vier CVs mit 5 Bit (31 für maximale Helligkeit):
+- CV51 - Dimmwert Rot
+- CV52 - Dimmwert Grün
+- CV53 - Dimmwert Gelb oben
+- CV54 - Dimmwert Gelb unten
+Die default-Einstellung ist 15
+
