@@ -1,16 +1,16 @@
 // DCC extended Accessories decoder for simple HL-signals of DR
-// (c) Michael Hochmuth https://github.com/Sim-59                          2026-05-28
+// (c) Michael Hochmuth https://github.com/Sim-59                          2026-06-03
 // 4 output ports
 // CV reading at programming track (PT) is possible with a temporarily circuit for 60 mA load at one port
 //
-// Decoder-Address = LSB + MSB*64
-// CV1 = 6 bit LSB, default 1
+// Decoder-Address in Output-Address-Mode = LSB + MSB*256
+// CV1 = 8 bit LSB, default 1
 // x x x x  x x x x
-//     +-+--+-+-+-+----- LSB 0 ... 63
+// +-+-+-+--+-+-+-+----- LSB 0 ... 255
 //
 // CV9 = 3 Bit MSB, default 0
 // x x x x  x x x x
-//            +-+-+----- MSB (0 ... 7) * 64
+//            +-+-+----- MSB (0 ... 7) * 256
 //
 // CV34, default 0b00000100 (4) for 1 sec blink frequency
 // x x x x  x x x x
@@ -32,8 +32,8 @@
 NmraDcc Dcc;
 
 //define the destination board
-//#define UNO
-#define PCB_10
+#define UNO
+//#define PCB_10
 //#define PCB_11
 
 #if defined UNO
@@ -43,7 +43,7 @@ NmraDcc Dcc;
   #define PORT2_PIN       4     // green LED
   #define PORT3_PIN       5     // yellow LED top
   #define PORT4_PIN       6     // yellow LED bottom
-  #define PROG_NEXT_PIN   8	    // programming port
+  #define PROG_NEXT_PIN  13	    // programming port
   #define DEBUG
   long int debounce;
   
@@ -243,7 +243,7 @@ void setup() {
   if ((Dcc.getCV(CV_ACCESSORY_DECODER_ADDRESS_LSB) == 255) || (Dcc.getCV(CV_ACCESSORY_DECODER_ADDRESS_MSB) == 255)) {
     FactoryDefaultCVIndex = sizeof(FactoryDefaultCVs) / sizeof(CVPair);
   } else {
-    AccDecoderAddr = (Dcc.getCV(CV_ACCESSORY_DECODER_ADDRESS_LSB & 0x03F)) + (Dcc.getCV(CV_ACCESSORY_DECODER_ADDRESS_MSB) << 6);
+    AccDecoderAddr = (Dcc.getCV(CV_ACCESSORY_DECODER_ADDRESS_LSB)) + (Dcc.getCV(CV_ACCESSORY_DECODER_ADDRESS_MSB) << 8);
     cv29_Bits = Dcc.getCV(CV_29_CONFIG);
     BlinkPeriod = (Dcc.getCV(CV_BLINK_TIME) & 0x0F);
 
@@ -261,9 +261,6 @@ void setup() {
   pinMode(PORT2_PIN, OUTPUT);
   pinMode(PORT3_PIN, OUTPUT);
   pinMode(PORT4_PIN, OUTPUT);
-  #if defined UNO
-    pinMode(PROG_NEXT_PIN, INPUT_PULLUP);
-  #endif
   digitalWrite(PORT1_PIN, LOW);
   digitalWrite(PORT2_PIN, LOW);
   digitalWrite(PORT3_PIN, LOW);
@@ -271,13 +268,25 @@ void setup() {
 
   pinMode(DCC_ACK_PIN, OUTPUT);
   digitalWrite(DCC_ACK_PIN, LOW);
-  
   pinMode(DCC_PIN, INPUT);          // DCC Eingang
+  
+  #if defined UNO
+    pinMode(PROG_NEXT_PIN, INPUT_PULLUP);
+  #endif
 
   // init NmraDcc library (PIN, manufacturer, version...) 
   Dcc.pin(digitalPinToInterrupt(DCC_PIN), DCC_PIN, 1);
   Dcc.initAccessoryDecoder(MAN_ID_DIY, 10, cv29_Bits & FLAGS_OUTPUT_ADDRESS_MODE, 0);   // CV8=Manufacturer-ID=13, CV7=Manufacturer-VERS=10
-  
+
+  #if defined UNO
+    if (digitalRead(PROG_NEXT_PIN) == 0) {
+      #if defined DEBUG  
+          Serial.println("ProgModeKey pressed");
+      #endif
+      Dcc.setAccDecDCCAddrNextReceived(1);
+    }
+  #endif
+
 //  delay(200);  // uncomment this if Micronucleus Bootloader is used.
 
   #if defined DEBUG  
@@ -335,24 +344,4 @@ void loop() {
     }
   }
 
-  // Wait for the first command to programme the address after setting PROG_NEXT_PIN to LOW and releasing
-  #if defined UNO
-    // Set address to first incoming command
-    if (debounce > 0) debounce--;
-    if ((digitalRead(PROG_NEXT_PIN) == 0) && (ProgModeActivated == false) && (debounce == 0)) {
-      ProgModeActivated = true;
-      debounce = 30000;
-      Dcc.setAccDecDCCAddrNextReceived(1);
-      #if defined DEBUG  
-          Serial.println("ProgModeKey pressed");
-      #endif
-    }
-    if ((digitalRead(PROG_NEXT_PIN) == 1) && (debounce == 0) && (ProgModeActivated == true)) {
-      ProgModeActivated = false;    
-      debounce = 30000;
-      #if defined DEBUG  
-          Serial.println("ProgModeKey released");
-      #endif
-    }
-  #endif
 }
