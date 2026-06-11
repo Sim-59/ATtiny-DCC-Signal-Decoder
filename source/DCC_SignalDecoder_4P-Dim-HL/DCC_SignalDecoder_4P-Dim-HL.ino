@@ -1,5 +1,5 @@
 // DCC extended Accessories decoder for simple HL-signals of DR
-// (c) Michael Hochmuth https://github.com/Sim-59                                2026-06-02
+// (c) Michael Hochmuth https://github.com/Sim-59                                2026-06-11
 // 4 output ports
 // CV reading at programming track (PT) is possible with a temporarily circuit for 60 mA load at one port
 //
@@ -12,14 +12,14 @@
 // x x x x  x x x x
 //            +-+-+----- MSB (0 ... 7) * 256
 //
-// CV34, default 0b00000100 (4) for 1 sec blink frequency
-// x x x x  x x x x
-//          +-+-+-+------ 4 bit for blinking periode in s (0.25 ... 3.75 sec) 
-//
 // CV29 = Konfiguration, default 192
 // x x x x  x x x x 
 // | +------------------ "0" = Decoder Address Mode, "1" = (64) Output Address Mode 
 // +-------------------- "1" = (128) Accessory Decoder Mode, is set for accessories
+//
+// CV34, default 0b00000100 (4) for 1 sec blink frequency
+// x x x x  x x x x
+//          +-+-+-+------ 4 bit for blinking periode in s (0.25 ... 3.75 sec) 
 //
 // CV51, CV52, CV53, CV54, default 15
 // x x x x  x x x x
@@ -44,15 +44,14 @@ NmraDcc Dcc;
 //#define UNO
 
 #if defined UNO
-  #define PROG_NEXT_PIN    13    // programming port
   #define DCC_PIN          2     // DCC-Signal
   #define DCC_ACK_PIN      12    // ACK for CV reading
-  #define PORT_RED         6     // PWM possible
+  #define PORT_RED         3     // PWM possible
   #define PORT_GREEN       5     // PWM possible
-  #define PORT_YTOP        3     // PWM possible
+  #define PORT_YTOP        6     // PWM possible
   #define PORT_YBOT        4     // no PWM, Soft-Dim
+  #define PROG_NEXT_PIN    13    // programming port
   #define DEBUG
-  long int debounce;
   
 #else                           // for ATtiny85 PCB MuFu4P 1.1 and  MuFuDec 1.0, (MuFu4P 1.0 in brackets) 
   #define DCC_PIN         2     // DCC signal
@@ -316,7 +315,7 @@ void setup() {
 
   // init NmraDcc library (PIN, manufacturer, version...) 
   Dcc.pin(digitalPinToInterrupt(DCC_PIN), DCC_PIN, 1);
-  Dcc.initAccessoryDecoder(MAN_ID_DIY, 10, cv29_Bits & FLAGS_OUTPUT_ADDRESS_MODE, 0);   // CV8=Manufacturer-ID=13, CV7=Manufacturer-VERS=10
+  Dcc.initAccessoryDecoder(MAN_ID_DIY, 50, cv29_Bits & FLAGS_OUTPUT_ADDRESS_MODE, 0);   // CV8=Manufacturer-ID=13, CV7=Manufacturer-VERS=50
   
   #if defined UNO
     if (digitalRead(PROG_NEXT_PIN) == 0) {
