@@ -1,5 +1,5 @@
 // DCC extended Accessories decoder for simple HL-signals of DR
-// (c) Michael Hochmuth https://github.com/Sim-59                          2026-06-03
+// (c) Michael Hochmuth https://github.com/Sim-59                          2026-06-11
 // 4 output ports
 // CV reading at programming track (PT) is possible with a temporarily circuit for 60 mA load at one port
 //
@@ -12,14 +12,14 @@
 // x x x x  x x x x
 //            +-+-+----- MSB (0 ... 7) * 256
 //
-// CV34, default 0b00000100 (4) for 1 sec blink frequency
-// x x x x  x x x x
-//          +-+-+-+------ 4 bit for blinking periode in s (0.25 ... 3.75 sec) 
-//
 // CV29 = Konfiguration, default 192
 // x x x x  x x x x 
 // | +------------------ "0" = Decoder Address Mode, "1" = (64) Output Address Mode 
 // +-------------------- "1" = (128) Accessory Decoder Mode, is set for accessories
+//
+// CV34, default 0b00000100 (4) for 1 sec blink frequency
+// x x x x  x x x x
+//          +-+-+-+------ 4 bit for blinking periode in s (0.25 ... 3.75 sec) 
 //
 // writing to CV8 is resetting the decoder
 //    CV1 = 1 default accessory address-LSB 
@@ -32,20 +32,19 @@
 NmraDcc Dcc;
 
 //define the destination board
-#define UNO
+//#define UNO
 //#define PCB_10
-//#define PCB_11
+#define PCB_11
 
 #if defined UNO
   #define DCC_PIN         2     // DCC signal
   #define DCC_ACK_PIN     12    // 60 mA-circuit for CV reading
   #define PORT1_PIN       3     // red LED
-  #define PORT2_PIN       4     // green LED
-  #define PORT3_PIN       5     // yellow LED top
-  #define PORT4_PIN       6     // yellow LED bottom
-  #define PROG_NEXT_PIN  13	    // programming port
+  #define PORT2_PIN       5     // green LED
+  #define PORT3_PIN       6     // yellow LED top
+  #define PORT4_PIN       4     // yellow LED bottom
+  #define PROG_NEXT_PIN   13    // programming port
   #define DEBUG
-  long int debounce;
   
 #elif defined PCB_10            // for ATtiny85 with obsolate PCB version MuFu4P 1.0
   #define DCC_PIN         2     // DCC signal
@@ -64,7 +63,7 @@ NmraDcc Dcc;
   #define PORT4_PIN       3     // vi (optinal ACK) - yellow LED bottom
 #endif
 
-#define CV_BLINK_TIME     34
+#define CV_BLINK_PERIOD   34    // blink period in 0.25s
  
 struct CVPair {
   uint16_t CV;
@@ -204,7 +203,7 @@ CVPair FactoryDefaultCVs[] = {
   {CV_ACCESSORY_DECODER_ADDRESS_MSB, 0},
   {CV_ACCESSORY_DECODER_ADDRESS_LSB, DEFAULT_ACCESSORY_DECODER_ADDRESS},
   {CV_29_CONFIG, CV29_ACCESSORY_DECODER | CV29_OUTPUT_ADDRESS_MODE},
-  {CV_BLINK_TIME,4},                                  // 1s blink frequeny
+  {CV_BLINK_PERIOD,4},                                  // 1s blink frequeny
 };
 
 //uint8_t FactoryDefaultCVIndex = sizeof(FactoryDefaultCVs) / sizeof(CVPair);
@@ -245,7 +244,7 @@ void setup() {
   } else {
     AccDecoderAddr = (Dcc.getCV(CV_ACCESSORY_DECODER_ADDRESS_LSB)) + (Dcc.getCV(CV_ACCESSORY_DECODER_ADDRESS_MSB) << 8);
     cv29_Bits = Dcc.getCV(CV_29_CONFIG);
-    BlinkPeriod = (Dcc.getCV(CV_BLINK_TIME) & 0x0F);
+    BlinkPeriod = (Dcc.getCV(CV_BLINK_PERIOD) & 0x0F);
 
     #if defined DEBUG  
         Serial.print(Dcc.getCV(CV_ACCESSORY_DECODER_ADDRESS_MSB));
@@ -276,7 +275,7 @@ void setup() {
 
   // init NmraDcc library (PIN, manufacturer, version...) 
   Dcc.pin(digitalPinToInterrupt(DCC_PIN), DCC_PIN, 1);
-  Dcc.initAccessoryDecoder(MAN_ID_DIY, 10, cv29_Bits & FLAGS_OUTPUT_ADDRESS_MODE, 0);   // CV8=Manufacturer-ID=13, CV7=Manufacturer-VERS=10
+  Dcc.initAccessoryDecoder(MAN_ID_DIY, 40, cv29_Bits & FLAGS_OUTPUT_ADDRESS_MODE, 0);   // CV8=Manufacturer-ID=13, CV7=Manufacturer-VERS=40
 
   #if defined UNO
     if (digitalRead(PROG_NEXT_PIN) == 0) {
