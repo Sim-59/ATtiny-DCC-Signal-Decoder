@@ -1,5 +1,5 @@
 // DCC extended Accessories decoder for simple HL-signals of DR
-// (c) Michael Hochmuth https://github.com/Sim-59                                2026-06-11
+// (c) Michael Hochmuth https://github.com/Sim-59                                2026-06-12
 // 4 output ports
 // CV reading at programming track (PT) is possible with a temporarily circuit for 60 mA load at one port
 //
@@ -75,7 +75,7 @@ struct CVPair {
 
 int AccDecoderAddr, BlinkPeriod;
 bool ProgModeActivated = false;
-bool BlinkPort1 = false;
+bool Blink_red = false;
 bool Blink_green = false;
 bool Blink_ytop = false;
 bool Blink_ybot = false;
@@ -353,7 +353,7 @@ void loop() {
   if (ybot_enable && (ybot_dim_pos <= cv_ybot_dim)) digitalWrite(PORT_YBOT, 1); else digitalWrite(PORT_YBOT, 0);
 
   // BlinkPort PORT1
-  if (BlinkPeriod && BlinkPort1) {
+  if (BlinkPeriod && Blink_red) {
     if (((currentPortMillis-startBlinkMillis)  % (BlinkPeriod*250)) < BlinkPeriod*125) {
 //      digitalWrite(PORT_RED, HIGH);
       analogWrite(PORT_RED,cv_red_dim);
@@ -364,23 +364,31 @@ void loop() {
 
   // BlinkPort PORT2
   if (BlinkPeriod && Blink_green) {
-    if (((currentPortMillis-startBlinkMillis)  % (BlinkPeriod*250)) < BlinkPeriod*125) {
-      if (green_on == false) analogWrite(PORT_GREEN,cv_green_dim);
-      green_on = true;
+    if (((currentPortMillis-startBlinkMillis) % (BlinkPeriod*250)) < BlinkPeriod*125) {
+      if (green_on == false) {
+        analogWrite(PORT_GREEN,cv_green_dim);
+        green_on = true;
+      }
     } else {
-      if (green_on == true) digitalWrite(PORT_GREEN, LOW);
-      green_on = false;
+      if (green_on == true) {
+        digitalWrite(PORT_GREEN, LOW);
+        green_on = false;
+      }
     }
   }
 
   // BlinkPort PORT3
   if (BlinkPeriod && Blink_ytop) {
     if (((currentPortMillis-startBlinkMillis) % (BlinkPeriod*250)) < BlinkPeriod*125) {
-      if (ytop_on == false) analogWrite(PORT_YTOP,cv_ytop_dim);
-      ytop_on = true;
+      if (ytop_on == false) {
+        analogWrite(PORT_YTOP,cv_ytop_dim);
+        ytop_on = true;
+      }
     } else {
-      if (ytop_on == true) digitalWrite(PORT_YTOP, LOW);
-      ytop_on = false;
+      if (ytop_on == true) {
+        digitalWrite(PORT_YTOP, LOW);
+        ytop_on = false;
+      }
     }
   }
 
