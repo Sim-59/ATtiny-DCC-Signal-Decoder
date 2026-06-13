@@ -22,14 +22,16 @@ Folgende HL-Signal-Begriffe sind mit den 4 LEDs (statisch und blinkend) für ein
 - Hl10 - Halt erwarten
 - Hl12a - Fahrt mit 40 km/h, Halt erwarten
 
-Bei EZMG-Signalen sind die Signalbilder meist reduziert ausgeführt, nur Hp0, Hl1 und Hl3a werden angezeigt, das gelbe obere Licht ist abgedeckt. Dieser Ausgang kann dann bei der Verdrahtung des Signals für 2x Weiß für das Rangiersignal Ra12 genutzt werden. Dies Signalbild ist als Option für diesen Zweck auch im Sketch umgesetzt.   
+Bei EZMG-Signalen sind die Signalbilder meist reduziert ausgeführt, nur Hp0, Hl1 und Hl3a werden angezeigt, das gelbe obere Licht ist abgedeckt. Dieser Ausgang kann dann bei der Verdrahtung des Signals für 2x Weiß für das Rangiersignal Ra12 genutzt werden. Dies Signalbild ist als Option für diesen Zweck auch im Sketch umgesetzt.  
+- Hp0 + Ra12 - Rangierfahrt erlaubt
 
-Es sind folgenden Konfigurationsvariablen (CVs) sind vorhanden:  
-- CV1 = 6 bit LSB, default 1 
+Der Dekoder nutzt eine DCC-Zubehöradresse. Es sind folgenden Konfigurationsvariablen (CVs) sind vorhanden:  
+- CV1 = 8 bit LSB, default 1 
+- CV9 = 3 Bit MSB, default 0
+  - Dekoderadresse = LSB + MSB*256
 - CV7 Versionsnummer, im Sketch eingestellt
 - CV8 Hersteller-ID, entsprechend nmra-Bibliothek 13 für DIY
   - Schreiben auf CV8 führt einen Decoder Reset mit Default-Werten aus
-- CV9 = 3 Bit MSB, default 0
 - CV29 Configuration, default 192
   - Bit6=1 = Output Address Mode
   - Bit7=1 = Accessory Decoder Mode
