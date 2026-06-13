@@ -22,6 +22,8 @@ Folgende HL-Signal-Begriffe sind mit den 4 LEDs (statisch und blinkend) für ein
 - Hl10 - Halt erwarten
 - Hl12a - Fahrt mit 40 km/h, Halt erwarten
 
+Bei EZMG-Signalen sind die Signalbilder meist reduziert ausgeführt, nur Hp0, Hl1 und Hl3a werden angezeigt, das gelbe obere Licht ist abgedeckt. Dieser Ausgang kann dann bei der Verdrahtung des Signals für 2x Weiß für das Rangiersignal Ra12 genutzt werden. Dies Signalbild ist als Option für diesen Zweck auch im Sketch umgesetzt.   
+
 Es sind folgenden Konfigurationsvariablen (CVs) sind vorhanden:  
 - CV1 = 6 bit LSB, default 1 
 - CV7 Versionsnummer, im Sketch eingestellt
