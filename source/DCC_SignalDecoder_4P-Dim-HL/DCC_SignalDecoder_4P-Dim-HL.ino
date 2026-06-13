@@ -1,5 +1,5 @@
 // DCC extended Accessories decoder for simple HL-signals of DR
-// (c) Michael Hochmuth https://github.com/Sim-59                                2026-06-12
+// (c) Michael Hochmuth https://github.com/Sim-59                                2026-06-13
 // 4 output ports
 // CV reading at programming track (PT) is possible with a temporarily circuit for 60 mA load at one port
 //
@@ -192,6 +192,20 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       Blink_ytop = false;
       #if defined DEBUG  
         Serial.println("Aspect 6");
+      #endif
+      break;
+
+    case 7:                           // Option nur, wenn HL7 ... HL12a am Signal nicht genutzt werden, 
+                                      // z.B. reduziertes EZMG-Ausfahrsignal mit nur Hp0, HL1, HL3a
+                                      // Verdrahtung statt "Gelb oben" dann 2x Weiß für RA12
+      digitalWrite(PORT_RED, HIGH);
+      digitalWrite(PORT_GREEN, LOW);
+      analogWrite(PORT_YTOP,cv_ytop_dim);
+      ybot_enable = false;             // digitalWrite(PORT_YBOT, x) in Soft-Dim in loop
+      Blink_green = false;
+      Blink_ytop = false;
+      #if defined DEBUG  
+        Serial.println("Aspect 7");
       #endif
       break;
 
