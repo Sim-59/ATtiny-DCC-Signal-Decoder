@@ -198,7 +198,7 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
     case 7:                           // Option nur, wenn HL7 ... HL12a am Signal nicht genutzt werden, 
                                       // z.B. reduziertes EZMG-Ausfahrsignal mit nur Hp0, HL1, HL3a
                                       // Verdrahtung statt "Gelb oben" dann 2x Weiß für RA12
-      digitalWrite(PORT_RED, HIGH);
+      analogWrite(PORT_RED,cv_red_dim);
       digitalWrite(PORT_GREEN, LOW);
       analogWrite(PORT_YTOP,cv_ytop_dim);
       ybot_enable = false;             // digitalWrite(PORT_YBOT, x) in Soft-Dim in loop
