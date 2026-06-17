@@ -4,7 +4,7 @@
 Zum ATtiny85-Digispark-Board wurde zu Beginn eine kleine [Zusatzplatine](http://simandit.de/simwiki/doku.php?id=modellbahn:umbauten:dcc-dekoder#zusatzplatine_4-port-variante) entwickelt, mit der die Anschaltung an das Gleissignal erfolgt. Mit Transistoren für die Funktionsausgänge wird die gleichgerichtete Gleisspannung geschaltet. Zur Erzeugung des ACK-Signals ist ein Anschluss vorgesehen, der während des Lesens der CVs verbunden werden kann. Schreiben ist auch ohne diesen möglich.\
 Diese Platinen-Kombination kann mit dem enthaltenen Bootloader über USB programmiert werden. Wegen der Bootzeit von 300 ms (nach Upgrade) bis 5 s (default), die nach jedem Power-On entsteht, nutze ich nur noch die ISP-Programmierung ohne Bootloader.
 
-Eine zweite [Leiterplattenvariante](https://simandit.de/simwiki/doku.php?id=modellbahn:umbauten:dcc-dekoder#dcc-multi-funktions-dekoder_4-port)) für den DCC-Dekoder enthält auch den ATtiny85 und dessen Spannungsversorgung. Diese Variante muss über ISP mit einem separaten Programmer programmiert werden.
+Eine zweite [Leiterplattenvariante](https://simandit.de/simwiki/doku.php?id=modellbahn:umbauten:dcc-dekoder#multi-funktions-dekoder_4-port)) für den DCC-Dekoder enthält auch den ATtiny85 und dessen Spannungsversorgung. Diese Variante muss über ISP mit einem separaten Programmer programmiert werden.
 
 Eine gute Informationsquelle zur Programmierung des ATtiny85 ist [Wolles Elektronikkiste](https://wolles-elektronikkiste.de/attiny-mit-arduino-code-programmieren). 
 
