@@ -14,7 +14,7 @@ Der Arduino-Sketch verwendet die [NmraDcc-Bibliothek](https://github.com/mrrwa/N
 Es wird das erweiterte DCC-Paket-Format für Zubehör - Extended Accessory Decoder Control Packet Format - verwendet. Damit sind in den meisten Systemen, z.B. DCC-Ex, 32 Signalbegriffe möglich.
 
 Folgende HL-Signal-Begriffe sind mit den 4 LEDs (statisch und blinkend) für eine Nebenbahn-Strecke möglich:
-- Hp0  - Halt
+- Hp0  - Halt (Hl13)
 - Hl1  - Fahrt mit Streckenhöchstgeschwindigkeit
 - Hl3a - Fahrt mit 40 km/h, dann mit Streckenhöchstgeschwindigkeit
 - Hl7  - Geschwindigkeit auf 40 km/h ermäßigen
@@ -22,7 +22,7 @@ Folgende HL-Signal-Begriffe sind mit den 4 LEDs (statisch und blinkend) für ein
 - Hl10 - Halt erwarten
 - Hl12a - Fahrt mit 40 km/h, Halt erwarten
 
-Bei EZMG-Signalen sind die Signalbilder meist reduziert ausgeführt, nur Hp0, Hl1 und Hl3a werden angezeigt, das gelbe obere Licht ist abgedeckt. Dieser Ausgang kann dann bei der Verdrahtung des Signals für 2x Weiß für das Rangiersignal Ra12 genutzt werden. Dies Signalbild ist als Option für diesen Zweck auch im Sketch umgesetzt.  
+Bei EZMG-Ausfahrsignalen sind die Signalbilder meist reduziert ausgeführt, nur Hp0 (Hl13), Hl1 bzw. Hl3a bei abzweigender Weiche werden angezeigt, das gelbe obere Licht ist abgedeckt. Dieser Ausgang kann dann bei der Verdrahtung des Signals für 2x Weiß für das Rangiersignal Ra12 genutzt werden. Dies Signalbild ist als Option für diesen Zweck auch im Sketch umgesetzt.  
 - Hp0 + Ra12 - Rangierfahrt erlaubt
 
 Der Dekoder nutzt eine DCC-Zubehöradresse. Es sind folgenden Konfigurationsvariablen (CVs) sind vorhanden:  
