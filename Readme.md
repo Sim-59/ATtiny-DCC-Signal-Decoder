@@ -22,7 +22,7 @@ Folgende HL-Signal-Begriffe sind mit den 4 LEDs (statisch und blinkend) für ein
 - Hl10 - Halt erwarten
 - Hl12a - Fahrt mit 40 km/h, Halt erwarten
 
-Bei EZMG-Ausfahrsignalen sind die Signalbilder meist reduziert ausgeführt, nur Hp0 (Hl13), Hl1 bzw. Hl3a bei abzweigender Weiche werden angezeigt, das gelbe obere Licht ist abgedeckt. Dieser Ausgang kann dann bei der Verdrahtung des Signals für 2x Weiß für das Rangiersignal Ra12 genutzt werden. Dies Signalbild ist als Option für diesen Zweck auch im Sketch umgesetzt.  
+Bei EZMG-Ausfahrsignalen sind die Signalbilder meist reduziert ausgeführt, nur Hp0 (Hl13), Hl1 bzw. Hl3a bei abzweigender Weiche werden angezeigt, das gelbe obere Licht ist abgedeckt. Dieser Ausgang kann dann bei der Verdrahtung des Signals für 2x Weiß für das Rangiersignal Ra12 genutzt werden. Dieses Signalbild ist als Option bei entsprechender Verdrahtung auch im Sketch umgesetzt.  
 - Hp0 + Ra12 - Rangierfahrt erlaubt
 
 Der Dekoder nutzt eine DCC-Zubehöradresse. Es sind folgenden Konfigurationsvariablen (CVs) sind vorhanden:  
