@@ -25,7 +25,7 @@ Folgende HL-Signal-Begriffe sind mit den 4 LEDs (statisch und blinkend) für ein
 Bei EZMG-Ausfahrsignalen sind die Signalbilder meist reduziert ausgeführt, nur Hp0 (Hl13), Hl1 bzw. Hl3a bei abzweigender Weiche werden angezeigt, das gelbe obere Licht ist abgedeckt. Dieser Ausgang kann dann bei der Verdrahtung des Signals für 2x Weiß für das Rangiersignal Ra12 genutzt werden. Dieses Signalbild ist als Option bei entsprechender Verdrahtung auch im Sketch umgesetzt.  
 - Hp0 + Ra12 - Rangierfahrt erlaubt
 
-Der Dekoder nutzt eine DCC-Zubehöradresse. Es sind folgenden Konfigurationsvariablen (CVs) sind vorhanden:  
+Der Dekoder nutzt eine DCC-Zubehöradresse und den Output-Address-Mode. Es sind folgenden Konfigurationsvariablen (CVs) sind vorhanden:  
 - CV1 = 8 bit LSB, default 1 
 - CV9 = 3 Bit MSB, default 0
   - Dekoderadresse = LSB + MSB*256
