@@ -35,10 +35,9 @@ Der Dekoder nutzt eine DCC-Zubehöradresse und den Output-Address-Mode. Es sind 
 - CV29 Configuration, default 192
   - Bit6=1 = Output Address Mode
   - Bit7=1 = Accessory Decoder Mode
-- CV34 Blinking periode - default 4 for 1 sec blink frequency (4 bit for blinking periode in s (0.25 ... 3.75 s))
+- CV34 Blinking periode - default 10 for 1 sec blink frequency (5 bit for blinking periode in s (0.1 ... 3.1 s))
 
 In der Variante mit SoftDim wird die Helligkeit von 3 Ports mit PWM des ATtiny realisiert, bei PB3 wird das PWM in der Loop-Schleife realisiert. Für die Dim-Werte gibt es vier CVs mit 5 Bit (31 für maximale Helligkeit):
 - CV51, CV52, CV53, CV54 - Dimmwert Rot, Grün, Gelb oben, Gelb unten
-
-Die default-Einstellung ist 15
+- Die default-Einstellung ist 15
 
