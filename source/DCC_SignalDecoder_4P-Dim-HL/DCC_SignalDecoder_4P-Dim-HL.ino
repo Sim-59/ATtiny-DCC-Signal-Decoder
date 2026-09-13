@@ -62,6 +62,8 @@ NmraDcc Dcc;
   #define PORT_YBOT       3     // vi - yellow LED bottom   (gn) - SoftDim, optinal ACK
 #endif
 
+#define MAN_VERSION       51   // used in init call, is read in CV#7
+
 #define CV_BLINK_PERIOD   34   // blink period in 0.1s
 #define CV_RED_DIM        51   // Dimmwert PORT1
 #define CV_GREEN_DIM      52   // Dimmwert PORT2
@@ -329,7 +331,7 @@ void setup() {
 
   // init NmraDcc library (PIN, manufacturer, version...) 
   Dcc.pin(digitalPinToInterrupt(DCC_PIN), DCC_PIN, 1);
-  Dcc.initAccessoryDecoder(MAN_ID_DIY, 51, cv29_Bits & FLAGS_OUTPUT_ADDRESS_MODE, 0);   // CV8=Manufacturer-ID=13, CV7=Manufacturer-VERS=50
+  Dcc.initAccessoryDecoder(MAN_ID_DIY, MAN_VERSION, cv29_Bits & FLAGS_OUTPUT_ADDRESS_MODE, 0);   // CV8=Manufacturer-ID=13, CV7=Manufacturer-VERSION
   
   #if defined UNO
     if (digitalRead(PROG_NEXT_PIN) == 0) {
