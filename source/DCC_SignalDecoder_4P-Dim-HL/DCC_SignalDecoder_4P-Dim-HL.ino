@@ -1,5 +1,5 @@
 // DCC extended Accessories decoder for simple HL-signals of DR
-// (c) Michael Hochmuth https://github.com/Sim-59                                2026-06-13
+// (c) Michael Hochmuth https://github.com/Sim-59                                2026-09-13
 // 4 output ports
 // CV reading at programming track (PT) is possible with a temporarily circuit for 60 mA load at one port
 //
@@ -17,9 +17,9 @@
 // | +------------------ "0" = Decoder Address Mode, "1" = (64) Output Address Mode 
 // +-------------------- "1" = (128) Accessory Decoder Mode, is set for accessories
 //
-// CV34, default 0b00000100 (4) for 1 sec blink frequency
+// CV34, default 10 for 1 sec blink frequency
 // x x x x  x x x x
-//          +-+-+-+------ 4 bit for blinking periode in s (0.25 ... 3.75 sec) 
+//       +--+-+-+-+------ 5 bit for blinking periode in s (0.1 ... 3.1 sec) 
 //
 // CV51, CV52, CV53, CV54, default 15
 // x x x x  x x x x
@@ -30,7 +30,7 @@
 //    CV1 = 1 default accessory address-LSB 
 //    CV9 = 0 default accessory address-MSB 
 //    CV29 = 192
-//    CV34 = 4  blink periode
+//    CV34 = 10 blink periode
 //    CV51 = 15 PWM dim red
 //    CV52 = 15 PWM dim green
 //    CV53 = 15 PWM dim yellow top
@@ -62,7 +62,7 @@ NmraDcc Dcc;
   #define PORT_YBOT       3     // vi - yellow LED bottom   (gn) - SoftDim, optinal ACK
 #endif
 
-#define CV_BLINK_PERIOD   34   // blink period in 0.25s
+#define CV_BLINK_PERIOD   34   // blink period in 0.1s
 #define CV_RED_DIM        51   // Dimmwert PORT1
 #define CV_GREEN_DIM      52   // Dimmwert PORT2
 #define CV_YTOP_DIM       53   // Dimmwert PORT3
@@ -230,7 +230,7 @@ CVPair FactoryDefaultCVs[] = {
   {CV_ACCESSORY_DECODER_ADDRESS_MSB, 0},
   {CV_ACCESSORY_DECODER_ADDRESS_LSB, DEFAULT_ACCESSORY_DECODER_ADDRESS},
   {CV_29_CONFIG, CV29_ACCESSORY_DECODER | CV29_OUTPUT_ADDRESS_MODE},
-  {CV_BLINK_PERIOD,4},                                  // 1s blink frequeny
+  {CV_BLINK_PERIOD,10},                                  // 1s blink frequeny
   {CV_RED_DIM,15},
   {CV_GREEN_DIM,15},
   {CV_YTOP_DIM,15},
@@ -275,7 +275,7 @@ void setup() {
   } else {
     AccDecoderAddr = (Dcc.getCV(CV_ACCESSORY_DECODER_ADDRESS_LSB)) + (Dcc.getCV(CV_ACCESSORY_DECODER_ADDRESS_MSB) << 8);
     cv29_Bits = Dcc.getCV(CV_29_CONFIG);
-    BlinkPeriod = (Dcc.getCV(CV_BLINK_PERIOD) & 0x0F);
+    BlinkPeriod = (Dcc.getCV(CV_BLINK_PERIOD) & 0x1F);
 
     #if defined DEBUG  
         Serial.print(Dcc.getCV(CV_ACCESSORY_DECODER_ADDRESS_MSB));
@@ -329,7 +329,7 @@ void setup() {
 
   // init NmraDcc library (PIN, manufacturer, version...) 
   Dcc.pin(digitalPinToInterrupt(DCC_PIN), DCC_PIN, 1);
-  Dcc.initAccessoryDecoder(MAN_ID_DIY, 50, cv29_Bits & FLAGS_OUTPUT_ADDRESS_MODE, 0);   // CV8=Manufacturer-ID=13, CV7=Manufacturer-VERS=50
+  Dcc.initAccessoryDecoder(MAN_ID_DIY, 51, cv29_Bits & FLAGS_OUTPUT_ADDRESS_MODE, 0);   // CV8=Manufacturer-ID=13, CV7=Manufacturer-VERS=50
   
   #if defined UNO
     if (digitalRead(PROG_NEXT_PIN) == 0) {
@@ -378,7 +378,7 @@ void loop() {
 
   // BlinkPort PORT2
   if (BlinkPeriod && Blink_green) {
-    if (((currentPortMillis-startBlinkMillis) % (BlinkPeriod*250)) < BlinkPeriod*125) {
+    if (((currentPortMillis-startBlinkMillis) % (BlinkPeriod*100)) < BlinkPeriod*50) {
       if (green_on == false) {
         analogWrite(PORT_GREEN,cv_green_dim);
         green_on = true;
@@ -393,7 +393,7 @@ void loop() {
 
   // BlinkPort PORT3
   if (BlinkPeriod && Blink_ytop) {
-    if (((currentPortMillis-startBlinkMillis) % (BlinkPeriod*250)) < BlinkPeriod*125) {
+    if (((currentPortMillis-startBlinkMillis) % (BlinkPeriod*100)) < BlinkPeriod*50) {
       if (ytop_on == false) {
         analogWrite(PORT_YTOP,cv_ytop_dim);
         ytop_on = true;
@@ -408,7 +408,7 @@ void loop() {
 
   // BlinkPort PORT4 (PB3)
   if (BlinkPeriod && Blink_ybot) {
-    if (((currentPortMillis-startBlinkMillis) % (BlinkPeriod*250)) < BlinkPeriod*125) {
+    if (((currentPortMillis-startBlinkMillis) % (BlinkPeriod*100)) < BlinkPeriod*50) {
       ybot_enable = true;
     } else {
       ybot_enable = false;
