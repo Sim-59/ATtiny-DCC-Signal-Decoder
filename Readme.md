@@ -25,24 +25,9 @@ Folgende HL-Signal-Begriffe sind mit den 4 LEDs (statisch und blinkend) für ein
 Bei EZMG-Ausfahrsignalen sind die Signalbilder meist reduziert ausgeführt, nur Hp0 (Hl13), Hl1 bzw. Hl3a bei abzweigender Weiche werden angezeigt, das gelbe obere Licht ist abgedeckt. Dieser Ausgang kann dann bei der Verdrahtung des Signals für 2x Weiß für das Rangiersignal Ra12 genutzt werden. Dieses Signalbild ist als Option bei entsprechender Verdrahtung auch im Sketch umgesetzt.  
 - Hp0 + Ra12 - Rangierfahrt erlaubt
 
-Der Dekoder nutzt eine DCC-Zubehöradresse und den Output-Address-Mode. Es sind folgenden Konfigurationsvariablen (CVs) sind vorhanden:  
-- CV1 = 8 bit LSB, default 1 
-- CV9 = 3 Bit MSB, default 0
-  - Dekoderadresse = LSB + MSB*256
-- CV7 Versionsnummer, im Sketch eingestellt
-- CV8 Hersteller-ID, entsprechend nmra-Bibliothek 13 für DIY
-  - Schreiben auf CV8 führt einen Decoder Reset mit Default-Werten aus
-- CV29 Configuration, default 192
-  - Bit6=1 = Output Address Mode
-  - Bit7=1 = Accessory Decoder Mode
-- CV34 Blink Periode - default 10 für 1 sec (5 bit für (0.1 ... 3.1 s))
+Der Dekoder nutzt eine DCC-Zubehöradresse und den Output-Address-Mode. 
 
 In der Variante mit Dim-Einstellung der Lichtquellen wird die Helligkeit von 3 Ports mit PWM des ATtiny realisiert, bei PB3 wird das PWM in der Loop-Schleife realisiert. Für die Dim-Werte gibt es vier CVs mit 5 Bit (31 für maximale Helligkeit):
-- CV51, CV52, CV53, CV54 - Dimmwert Rot, Grün, Gelb oben, Gelb unten
-- Die default-Einstellung ist 15
 
-In der Variante mit Fade-In und Fade-Out sind für das langsame Ein-/Ausschalten der Lichtquellen weitere Konfigurationsvariablen definiert
-- CV35 Prozentwert für Blinken-Ein, default 30, Bereich 2 ... 98%
-- CV36 ... CV39 Werte für das langsame Ein- und Ausschalten (Fade In, Fade Out), 5 Bit, Zeit = dieser Wert * Dim-Wert in ms 
-- CV40 Pause nach Fade-Out, default 20, Zeit = Wert * 25 5ms
+In der Variante mit Fade-In und Fade-Out sind für das langsame Ein-/Ausschalten der Lichtquellen weitere Konfigurationsvariablen definiert.
 
