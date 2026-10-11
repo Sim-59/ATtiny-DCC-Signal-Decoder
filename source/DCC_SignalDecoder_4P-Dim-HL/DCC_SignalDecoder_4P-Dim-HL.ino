@@ -1,5 +1,5 @@
 // DCC extended Accessories decoder for simple HL-signals of DR
-// (c) Michael Hochmuth https://github.com/Sim-59                                2026-09-13
+// (c) Michael Hochmuth https://github.com/Sim-59                                2026-10-10
 // 4 output ports
 // CV reading at programming track (PT) is possible with a temporarily circuit for 60 mA load at one port
 //
@@ -17,7 +17,7 @@
 // | +------------------ "0" = Decoder Address Mode, "1" = (64) Output Address Mode 
 // +-------------------- "1" = (128) Accessory Decoder Mode, is set for accessories
 //
-// CV34, default 10 for 1 sec blink frequency
+// CV34, default 13 (13 x 100 ms, ca. 46 blink impulses pro minute)
 // x x x x  x x x x
 //       +--+-+-+-+------ 5 bit for blinking periode in s (0.1 ... 3.1 sec) 
 //
@@ -30,7 +30,7 @@
 //    CV1 = 1 default accessory address-LSB 
 //    CV9 = 0 default accessory address-MSB 
 //    CV29 = 192
-//    CV34 = 10 blink periode
+//    CV34 = 13 blink periode
 //    CV51 = 15 PWM dim red
 //    CV52 = 15 PWM dim green
 //    CV53 = 15 PWM dim yellow top
@@ -56,13 +56,13 @@ NmraDcc Dcc;
 #else                           // for ATtiny85 PCB MuFu4P 1.1 and  MuFuDec 1.0, (MuFu4P 1.0 in brackets) 
   #define DCC_PIN         2     // DCC signal
   #define DCC_ACK_PIN     3     // 60 mA-circuit can be temporarily connected to pin 4 for CV reading
-  #define PORT_RED        0     // ws - red LED             (ws)
-  #define PORT_GREEN      4     // ge - green LED           (vi)
-  #define PORT_YTOP       1     // gn - yellow LED top      (ge)
-  #define PORT_YBOT       3     // vi - yellow LED bottom   (gn) - SoftDim, optinal ACK
+  #define PORT_RED        0     // ws - red LED             (ws - red LED)
+  #define PORT_GREEN      4     // ge - green LED           (vi - yellow LED bottom)
+  #define PORT_YTOP       1     // gn - yellow LED top      (ge - yellow LED top)
+  #define PORT_YBOT       3     // vi - yellow LED bottom   (gn - green LED) - SoftDim, optinal ACK
 #endif
 
-#define MAN_VERSION       51   // used in init call, is read in CV#7
+#define MAN_VERSION       52   // used in init call, is read in CV#7
 
 #define CV_BLINK_PERIOD   34   // blink period in 0.1s
 #define CV_RED_DIM        51   // Dimmwert PORT1
@@ -77,10 +77,7 @@ struct CVPair {
 
 int AccDecoderAddr, BlinkPeriod;
 bool ProgModeActivated = false;
-bool Blink_red = false;
-bool Blink_green = false;
 bool Blink_ytop = false;
-bool Blink_ybot = false;
 uint8_t cv_red_dim, cv_green_dim, cv_ytop_dim, cv_ybot_dim;
 uint8_t ybot_dim_pos = 0; 
 bool ybot_enable = false; 
@@ -103,11 +100,11 @@ void notifyDccSigOutputState( uint16_t Addr, uint8_t State) {
 }
 
 void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
- 
-  startBlinkMillis = millis();
 
 // check if the command is for our address and output
   if(SIGN_addr == AccDecoderAddr)  {
+
+  startBlinkMillis = millis();
 
     switch (SIGN_aspect) {
     case 0:                           // Hp0 (HL13) rot
@@ -115,7 +112,6 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       digitalWrite(PORT_GREEN, LOW);
       digitalWrite(PORT_YTOP, LOW);
       ybot_enable = false;            // digitalWrite(PORT_YBOT, x) in Soft-Dim in loop 
-      Blink_green = false;
       Blink_ytop = false;
       #if defined DEBUG  
         Serial.println("Aspect 0");
@@ -127,7 +123,6 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       analogWrite(PORT_GREEN,cv_green_dim);
       digitalWrite(PORT_YTOP, LOW);
       ybot_enable = false;            // digitalWrite(PORT_YBOT, x) in Soft-Dim in loop 
-      Blink_green = false;
       Blink_ytop = false;
       #if defined DEBUG  
         Serial.println("Aspect 1");
@@ -139,7 +134,6 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       analogWrite(PORT_GREEN,cv_green_dim);
       digitalWrite(PORT_YTOP, LOW);
       ybot_enable = true;             // digitalWrite(PORT_YBOT, x) in Soft-Dim in loop
-      Blink_green = false;
       Blink_ytop = false;
       #if defined DEBUG  
         Serial.println("Aspect 2");
@@ -152,7 +146,6 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       analogWrite(PORT_YTOP,cv_ytop_dim);
       ybot_enable = false;            // digitalWrite(PORT_YBOT, x) in Soft-Dim in loop
       ytop_on = false;
-      Blink_green = false;
       Blink_ytop = true;
       ytop_on = false;                // damit beim ersten Aufruf im Blinkmode "ein" erfolgt
       #if defined DEBUG  
@@ -165,7 +158,6 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       digitalWrite(PORT_GREEN, LOW);
       analogWrite(PORT_YTOP,cv_ytop_dim);
       ybot_enable = true;             // digitalWrite(PORT_YBOT, x) in Soft-Dim in loop
-      Blink_green = false;
       Blink_ytop = true;
       ytop_on = false;                // damit beim ersten Aufruf im Blinkmode "ein" erfolgt
       #if defined DEBUG  
@@ -178,7 +170,6 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       digitalWrite(PORT_GREEN, LOW);
       analogWrite(PORT_YTOP,cv_ytop_dim);
       ybot_enable = false;            // digitalWrite(PORT_YBOT, x) in Soft-Dim in loop
-      Blink_green = false;
       Blink_ytop = false;
       #if defined DEBUG  
         Serial.println("Aspect 5");
@@ -190,7 +181,6 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       digitalWrite(PORT_GREEN, LOW);
       analogWrite(PORT_YTOP,cv_ytop_dim);
       ybot_enable = true;             // digitalWrite(PORT_YBOT, x) in Soft-Dim in loop
-      Blink_green = false;
       Blink_ytop = false;
       #if defined DEBUG  
         Serial.println("Aspect 6");
@@ -204,7 +194,6 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       digitalWrite(PORT_GREEN, LOW);
       analogWrite(PORT_YTOP,cv_ytop_dim);
       ybot_enable = false;             // digitalWrite(PORT_YBOT, x) in Soft-Dim in loop
-      Blink_green = false;
       Blink_ytop = false;
       #if defined DEBUG  
         Serial.println("Aspect 7");
@@ -216,7 +205,6 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       digitalWrite(PORT_GREEN, LOW);
       digitalWrite(PORT_YTOP, LOW);
       ybot_enable = false;            // digitalWrite(PORT_YBOT, x) in Soft-Dim in loop
-      Blink_green = false;
       Blink_ytop = false;
       #if defined DEBUG  
         Serial.println("Aspect default");
@@ -232,7 +220,7 @@ CVPair FactoryDefaultCVs[] = {
   {CV_ACCESSORY_DECODER_ADDRESS_MSB, 0},
   {CV_ACCESSORY_DECODER_ADDRESS_LSB, DEFAULT_ACCESSORY_DECODER_ADDRESS},
   {CV_29_CONFIG, CV29_ACCESSORY_DECODER | CV29_OUTPUT_ADDRESS_MODE},
-  {CV_BLINK_PERIOD,10},                                  // 1s blink frequeny
+  {CV_BLINK_PERIOD,13},                                  // 1s blink frequeny
   {CV_RED_DIM,15},
   {CV_GREEN_DIM,15},
   {CV_YTOP_DIM,15},
@@ -368,31 +356,6 @@ void loop() {
   if (ybot_dim_pos > 31) ybot_dim_pos = 1;
   if (ybot_enable && (ybot_dim_pos <= cv_ybot_dim)) digitalWrite(PORT_YBOT, 1); else digitalWrite(PORT_YBOT, 0);
 
-  // BlinkPort PORT1
-  if (BlinkPeriod && Blink_red) {
-    if (((currentPortMillis-startBlinkMillis)  % (BlinkPeriod*250)) < BlinkPeriod*125) {
-//      digitalWrite(PORT_RED, HIGH);
-      analogWrite(PORT_RED,cv_red_dim);
-    } else {
-      digitalWrite(PORT_RED, LOW);
-    }
-  }
-
-  // BlinkPort PORT2
-  if (BlinkPeriod && Blink_green) {
-    if (((currentPortMillis-startBlinkMillis) % (BlinkPeriod*100)) < BlinkPeriod*50) {
-      if (green_on == false) {
-        analogWrite(PORT_GREEN,cv_green_dim);
-        green_on = true;
-      }
-    } else {
-      if (green_on == true) {
-        digitalWrite(PORT_GREEN, LOW);
-        green_on = false;
-      }
-    }
-  }
-
   // BlinkPort PORT3
   if (BlinkPeriod && Blink_ytop) {
     if (((currentPortMillis-startBlinkMillis) % (BlinkPeriod*100)) < BlinkPeriod*50) {
@@ -407,14 +370,4 @@ void loop() {
       }
     }
   }
-
-  // BlinkPort PORT4 (PB3)
-  if (BlinkPeriod && Blink_ybot) {
-    if (((currentPortMillis-startBlinkMillis) % (BlinkPeriod*100)) < BlinkPeriod*50) {
-      ybot_enable = true;
-    } else {
-      ybot_enable = false;
-    }
-  }
-
 }
