@@ -25,6 +25,6 @@ Folgende HL-Signal-Begriffe sind mit den 4 LEDs (statisch und blinkend) für ein
 Bei EZMG-Ausfahrsignalen sind die Signalbilder meist reduziert ausgeführt, nur Hp0 (Hl13), Hl1 bzw. Hl3a bei abzweigender Weiche werden angezeigt, das gelbe obere Licht ist abgedeckt. Dieser Ausgang kann dann bei der Verdrahtung des Signals für 2x Weiß für das Rangiersignal Ra12 genutzt werden. Dieses Signalbild ist als Option bei entsprechender Verdrahtung auch im Sketch umgesetzt.  
 - Hp0 + Ra12 - Rangierfahrt erlaubt
 
-Die Helligkeitseinstellung der Lichtquellen an 3 Ports kann mit PWM-Dimmen des ATtiny realisiert, bei PB3 wird das PWM in der Loop-Schleife realisiert.
+Die Helligkeitseinstellung der Lichtquellen an 3 Ports ist mit PWM-Dimmen des ATtiny realisiert, bei PB3 wird das PWM in der Loop-Schleife realisiert.
 Für das langsame Ein-/Ausschalten (Fade-In und Fade-Out) der Lichtquellen sind weitere Konfigurationsvariablen definiert.
 
