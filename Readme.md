@@ -10,9 +10,8 @@ Eine gute Informationsquelle zur Programmierung des ATtiny85 ist [Wolles Elektro
 
 ## Software
 Der Arduino-Sketch verwendet die [NmraDcc-Bibliothek](https://github.com/mrrwa/NmraDcc) von [MRRWA](http://mrrwa.org/), die über die Arduino-Bibliotheksverwaltung eingebunden werden kann.
-
-Der Arduino-Sketch des Dekoders nutzt eine DCC-Zubehöradresse und den Output-Address-Mode. 
 Es wird das erweiterte DCC-Paket-Format für Zubehör - Extended Accessory Decoder Control Packet Format - verwendet. Damit sind in den meisten Systemen, z.B. DCC-Ex, 32 Signalbegriffe möglich.
+Der Dekoder nutzt eine DCC-Zubehöradresse im Output-Address-Mode. 
 
 Folgende HL-Signal-Begriffe sind mit den 4 LEDs (statisch und blinkend) für eine Nebenbahn-Strecke möglich:
 - Hp0  - Halt (Hl13)
