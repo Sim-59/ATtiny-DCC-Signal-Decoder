@@ -17,7 +17,7 @@ Folgende HL-Signal-Begriffe sind mit den 4 LEDs (statisch und blinkend) für ein
 - Hp0  - Halt (Hl13)
 - Hl1  - Fahrt mit Streckenhöchstgeschwindigkeit
 - Hl3a - Fahrt mit 40 km/h, dann mit Streckenhöchstgeschwindigkeit
-- Hl7  - Geschwindigkeit auf 40 km/h ermäßigen
+- Hl7  - Geschwindigkeit auf 40 km/h ermäßigen (nur bei Vorsignalfunktion)
 - Hl9a - Fahrt mit 40 km/h, Fahrt mit 40 km/h erwarten
 - Hl10 - Halt erwarten
 - Hl12a - Fahrt mit 40 km/h, Halt erwarten
