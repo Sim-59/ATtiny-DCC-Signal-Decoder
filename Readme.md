@@ -1,5 +1,5 @@
 # DCC-Signaldekoder mit ATtiny85 
-
+![description](https://github.com/Sim-59/ATtiny-DCC-Signal-Decoder/blob/main/images/PCB_MuFuDec_01k.png)
 ## Hardware
 Aufbauend auf eine kleine [Zusatzplatine](http://simandit.de/simwiki/doku.php?id=modellbahn:umbauten:dcc-dekoder#zusatzplatine_4-port-variante) zum ATtiny85-Digispark-Board wurde Die aktuelle [Leiterplattenvariante](https://simandit.de/simwiki/doku.php?id=modellbahn:umbauten:dcc-dekoder#multi-funktions-dekoder_4-port) für den DCC-Dekoder enthält auch den ATtiny85 und dessen Spannungsversorgung.\
 Mit Transistoren für die Funktionsausgänge wird die gleichgerichtete Gleisspannung geschaltet. Zur Erzeugung des ACK-Signals ist ein Anschluss vorgesehen, der vorübergehend zum Lesens der CVs durch einen Schalter oder Jumper überbrückt werden kann. CV-Schreiben ist auch ohne diesen möglich.
