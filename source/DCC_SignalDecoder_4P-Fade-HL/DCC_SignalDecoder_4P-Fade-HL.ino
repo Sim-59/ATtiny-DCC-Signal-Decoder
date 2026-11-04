@@ -1,5 +1,5 @@
 // DCC extended Accessories decoder for simple HL-signals (EZMG) of DR
-// (c) Michael Hochmuth https://github.com/Sim-59                                2026-10-12
+// (c) Michael Hochmuth https://github.com/Sim-59                                2026-11-03
 // 4 output ports
 // CV reading at programming track (PT) is possible with a temporarily circuit for 60 mA load at one port
 //
@@ -70,37 +70,37 @@ NmraDcc Dcc;
 #if defined UNO
   #define DCC_PIN          2     // DCC-Signal
   #define DCC_ACK_PIN      12    // ACK for CV reading
-  #define PORT_RED         3     // PWM possible
-  #define PORT_GREEN       5     // PWM possible
-  #define PORT_YTOP        6     // PWM possible
-  #define PORT_YBOT        4     // no PWM, Soft-Dim
+  #define PORT_OUT1        3     // PWM possible
+  #define PORT_OUT2        5     // PWM possible
+  #define PORT_OUT3        6     // PWM possible
+  #define PORT_OUT4        4     // no-PWM-Port for Soft-Dim testing
   #define PROG_NEXT_PIN    13    // programming port
   #define DEBUG
   
 #else                           // for ATtiny85 PCB MuFu4P 1.1 and  MuFuDec 1.0, (MuFu4P 1.0 in brackets) 
   #define DCC_PIN         2     // DCC signal
   #define DCC_ACK_PIN     3     // 60 mA-circuit can be temporarily connected to pin 4 for CV reading
-  #define PORT_RED        0     // ws - red LED             (ws - red LED)
-  #define PORT_GREEN      4     // ge - green LED           (vi - yellow LED bottom)
-  #define PORT_YTOP       1     // gn - yellow LED top      (ge - yellow LED top)
-  #define PORT_YBOT       3     // vi - yellow LED bottom   (gn - green LED) - SoftDim, optinal ACK
+  #define PORT_OUT1       0     // ws - red LED             (ws - red LED)
+  #define PORT_OUT2       4     // ge - green LED           (vi - yellow LED bottom)
+  #define PORT_OUT3       1     // gn - yellow LED top      (ge - yellow LED top)
+  #define PORT_OUT4       3     // vi - yellow LED bottom   (gn - green LED) - SoftDim, optinal ACK
 #endif
 
 #define MAN_VERSION       62   // used in init call, is read in CV#7
 
 #define CV_BLINK_PERIOD   34   // blink period in 0.1s
 #define CV_BLINK_PERC     35   // blink percentage
-#define CV_FADE_RED       36   // Fade time red
-#define CV_FADE_GREEN     37   // Fade time green
-#define CV_FADE_YTOP      38   // Fade time yellow top
-#define CV_FADE_YBOT      39   // Fade time yellow bot
+#define CV_FADE_OUT1      36   // Fade time out1 - red
+#define CV_FADE_OUT2      37   // Fade time out2 - green
+#define CV_FADE_OUT3      38   // Fade time out3 - yellow top
+#define CV_FADE_OUT4      39   // Fade time out4 - yellow bot
 
 #define CV_FADE_PAUSE_CFG 49   // Fade_Pause configuration
 #define CV_FADE_PAUSE     50   // Pause after Fade Out
-#define CV_RED_DIM        51   // Dimm value PORT1
-#define CV_GREEN_DIM      52   // Dimm value PORT2
-#define CV_YTOP_DIM       53   // Dimm value PORT3
-#define CV_YBOT_DIM       54   // Dimm value PORT4 - Soft-Dim
+#define CV_OUT1_DIM       51   // Dimm value
+#define CV_OUT2_DIM       52   // Dimm value
+#define CV_OUT3_DIM       53   // Dimm value
+#define CV_OUT4_DIM       54   // Dimm value - Soft-Dim
  
 struct CVPair {
   uint16_t CV;
@@ -109,31 +109,31 @@ struct CVPair {
 
 int AccDecoderAddr, cv_blink_period;
 bool ProgModeActivated = false;
-bool Blink_ytop = false;
-uint8_t cv_red_dim, cv_green_dim, cv_ytop_dim, cv_ybot_dim;
-uint8_t cv_fade_red, cv_fade_green, cv_fade_ytop, cv_fade_ybot, cv_fade_pause;
-uint8_t red_fade_pause, green_fade_pause, ytop_fade_pause, ybot_fade_pause;
+bool Blink_out3 = false;
+uint8_t cv_out1_dim, cv_out2_dim, cv_out3_dim, cv_out4_dim;
+uint8_t cv_fade_out1, cv_fade_out2, cv_fade_out3, cv_fade_out4, cv_fade_pause;
+uint8_t out1_fade_pause, out2_fade_pause, out3_fade_pause, out4_fade_pause;
 uint8_t cv_blink_perc, cv_fade_pause_cfg;
 
-uint8_t ybot_dim_pos = 0; 
-bool red_fadeInSet, red_fadeOutSet, green_fadeInSet, green_fadeOutSet, ytop_fadeInSet, ytop_fadeOutSet, ybot_fadeInSet, ybot_fadeOutSet;
+uint8_t out4_dim_pos = 0; 
+bool out1_fadeInSet, out1_fadeOutSet, out2_fadeInSet, out2_fadeOutSet, out3_fadeInSet, out3_fadeOutSet, out4_fadeInSet, out4_fadeOutSet;
 bool fadePauseSet;
 bool fadePause = false;
-bool red_on = false;
-bool green_on = false;
-bool ytop_on = false;
-bool red_fadeIn = false;
-bool red_fadeOut = false;
-bool green_fadeIn = false;
-bool green_fadeOut = false;
-bool ytop_fadeIn = false;
-bool ytop_fadeOut = false;
-bool ybot_fadeIn = false;
-bool ybot_fadeOut = false;
-uint8_t green_fade = 0;
-uint8_t red_fade = 0;
-uint8_t ytop_fade = 0;
-uint8_t ybot_fade = 0;
+bool out1_on = false;
+bool out2_on = false;
+bool out3_on = false;
+bool out1_fadeIn = false;
+bool out1_fadeOut = false;
+bool out2_fadeIn = false;
+bool out2_fadeOut = false;
+bool out3_fadeIn = false;
+bool out3_fadeOut = false;
+bool out4_fadeIn = false;
+bool out4_fadeOut = false;
+uint8_t out2_fade = 0;
+uint8_t out1_fade = 0;
+uint8_t out3_fade = 0;
+uint8_t out4_fade = 0;
 uint8_t pause = 0;
 
 unsigned long currentPortMillis, startBlinkMillis;
@@ -157,20 +157,20 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
 
     switch (SIGN_aspect) {
     case 0:                           // Hp0 (HL13) rot
-      red_fadeIn = true;
-      red_fadeInSet = true;
-      red_fadeOut = false;
-      green_fadeOut = true;
-      green_fadeOutSet = true;
-      green_fadeIn = false;
-      ytop_fadeOut = true;
-      ytop_fadeOutSet = true;
-      ytop_fadeIn = false;
-      ybot_fadeOut = true;
-      ybot_fadeOutSet = true;
-      ybot_fadeIn = false;
+      out1_fadeIn = true;
+      out1_fadeInSet = true;
+      out1_fadeOut = false;
+      out2_fadeOut = true;
+      out2_fadeOutSet = true;
+      out2_fadeIn = false;
+      out3_fadeOut = true;
+      out3_fadeOutSet = true;
+      out3_fadeIn = false;
+      out4_fadeOut = true;
+      out4_fadeOutSet = true;
+      out4_fadeIn = false;
       fadePause = true;
-      Blink_ytop = false;
+      Blink_out3 = false;
 
       #if defined DEBUG  
         Serial.println("Aspect 0");
@@ -178,20 +178,20 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       break;
 
     case 1:                           // HL1 grün - Strecken-Höchstgeschw.
-      red_fadeOut = true;
-      red_fadeOutSet = true;
-      red_fadeIn = false;
-      green_fadeIn = true;
-      green_fadeInSet = true;
-      green_fadeOut = false;
-      ytop_fadeOut = true;
-      ytop_fadeOutSet = true;
-      ytop_fadeIn = false;
-      ybot_fadeOut = true;
-      ybot_fadeOutSet = true;
-      ybot_fadeIn = false;
+      out1_fadeOut = true;
+      out1_fadeOutSet = true;
+      out1_fadeIn = false;
+      out2_fadeIn = true;
+      out2_fadeInSet = true;
+      out2_fadeOut = false;
+      out3_fadeOut = true;
+      out3_fadeOutSet = true;
+      out3_fadeIn = false;
+      out4_fadeOut = true;
+      out4_fadeOutSet = true;
+      out4_fadeIn = false;
       fadePause = true;
-      Blink_ytop = false;
+      Blink_out3 = false;
 
       #if defined DEBUG  
         Serial.println("Aspect 1");
@@ -199,20 +199,20 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       break;
 
     case 2:                           // HL3a grün-gelb - Fahrt 40 km/h, dann mit Strecken-Höchstgeschw.
-      red_fadeOut = true;
-      red_fadeOutSet = true;
-      red_fadeIn = false;
-      green_fadeIn = true;
-      green_fadeInSet = true;
-      green_fadeOut = false;
-      ytop_fadeOut = true;
-      ytop_fadeOutSet = true;
-      ytop_fadeIn = false;
-      ybot_fadeIn = true;
-      ybot_fadeInSet = true;
-      ybot_fadeOut = false;
+      out1_fadeOut = true;
+      out1_fadeOutSet = true;
+      out1_fadeIn = false;
+      out2_fadeIn = true;
+      out2_fadeInSet = true;
+      out2_fadeOut = false;
+      out3_fadeOut = true;
+      out3_fadeOutSet = true;
+      out3_fadeIn = false;
+      out4_fadeIn = true;
+      out4_fadeInSet = true;
+      out4_fadeOut = false;
       fadePause = true;
-      Blink_ytop = false;
+      Blink_out3 = false;
 
       #if defined DEBUG  
         Serial.println("Aspect 2");
@@ -220,21 +220,21 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       break;
 
     case 3:                           // HL7 gelb(blink) - Fahrt auf 40 km/h reduzieren
-      red_fadeOut = true;
-      red_fadeOutSet = true;
-      red_fadeIn = false;
-      green_fadeOut = true;
-      green_fadeOutSet = true;
-      green_fadeIn = false;
-      ytop_fadeIn = true;
-      ytop_fadeInSet = true;
-      ytop_fadeOut = false;
-      ybot_fadeOut = true;
-      ybot_fadeOutSet = true;
-      ybot_fadeIn = false;
+      out1_fadeOut = true;
+      out1_fadeOutSet = true;
+      out1_fadeIn = false;
+      out2_fadeOut = true;
+      out2_fadeOutSet = true;
+      out2_fadeIn = false;
+      out3_fadeIn = true;
+      out3_fadeInSet = true;
+      out3_fadeOut = false;
+      out4_fadeOut = true;
+      out4_fadeOutSet = true;
+      out4_fadeIn = false;
       fadePause = true;
-      Blink_ytop = true;
-      ytop_on = false;                // damit beim ersten Aufruf im Blinkmode "ein" erfolgt
+      Blink_out3 = true;
+      out3_on = false;                // damit beim ersten Aufruf im Blinkmode "ein" erfolgt
 
       #if defined DEBUG  
         Serial.println("Aspect 3");
@@ -242,21 +242,21 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       break;
 
     case 4:                           // HL9a gelb(blink)-gelb - Fahrt mit 40 km/h, 40 km/h erwarten
-      red_fadeOut = true;
-      red_fadeOutSet = true;
-      red_fadeIn = false;
-      green_fadeOut = true;
-      green_fadeOutSet = true;
-      green_fadeIn = false;
-      ytop_fadeIn = true;
-      ytop_fadeInSet = true;
-      ytop_fadeOut = false;
-      ybot_fadeIn = true;
-      ybot_fadeInSet = true;
-      ybot_fadeOut = false;
+      out1_fadeOut = true;
+      out1_fadeOutSet = true;
+      out1_fadeIn = false;
+      out2_fadeOut = true;
+      out2_fadeOutSet = true;
+      out2_fadeIn = false;
+      out3_fadeIn = true;
+      out3_fadeInSet = true;
+      out3_fadeOut = false;
+      out4_fadeIn = true;
+      out4_fadeInSet = true;
+      out4_fadeOut = false;
       fadePause = true;
-      Blink_ytop = true;
-      ytop_on = false;                // damit beim ersten Aufruf im Blinkmode "ein" erfolgt
+      Blink_out3 = true;
+      out3_on = false;                // damit beim ersten Aufruf im Blinkmode "ein" erfolgt
 
       #if defined DEBUG  
         Serial.println("Aspect 4");
@@ -264,20 +264,20 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       break;
 
     case 5:                           // HL10 gelb-oben - Halt erwarten
-      red_fadeOut = true;
-      red_fadeOutSet = true;
-      red_fadeIn = false;
-      green_fadeOut = true;
-      green_fadeOutSet = true;
-      green_fadeIn = false;
-      ytop_fadeIn = true;
-      ytop_fadeInSet = true;
-      ytop_fadeOut = false;
-      ybot_fadeOut = true;
-      ybot_fadeOutSet = true;
-      ybot_fadeIn = false;
+      out1_fadeOut = true;
+      out1_fadeOutSet = true;
+      out1_fadeIn = false;
+      out2_fadeOut = true;
+      out2_fadeOutSet = true;
+      out2_fadeIn = false;
+      out3_fadeIn = true;
+      out3_fadeInSet = true;
+      out3_fadeOut = false;
+      out4_fadeOut = true;
+      out4_fadeOutSet = true;
+      out4_fadeIn = false;
       fadePause = true;
-      Blink_ytop = false;
+      Blink_out3 = false;
 
       #if defined DEBUG  
         Serial.println("Aspect 5");
@@ -285,20 +285,20 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       break;
 
     case 6:                           // HL12a gelb-gelb - Fahrt mit 40 km/h, Halt erwarten
-      red_fadeOut = true;
-      red_fadeOutSet = true;
-      red_fadeIn = false;
-      green_fadeOut = true;
-      green_fadeOutSet = true;
-      green_fadeIn = false;
-      ytop_fadeIn = true;
-      ytop_fadeInSet = true;
-      ytop_fadeOut = false;
-      ybot_fadeIn = true;
-      ybot_fadeInSet = true;
-      ybot_fadeOut = false;
+      out1_fadeOut = true;
+      out1_fadeOutSet = true;
+      out1_fadeIn = false;
+      out2_fadeOut = true;
+      out2_fadeOutSet = true;
+      out2_fadeIn = false;
+      out3_fadeIn = true;
+      out3_fadeInSet = true;
+      out3_fadeOut = false;
+      out4_fadeIn = true;
+      out4_fadeInSet = true;
+      out4_fadeOut = false;
       fadePause = true;
-      Blink_ytop = false;
+      Blink_out3 = false;
 
       #if defined DEBUG  
         Serial.println("Aspect 6");
@@ -308,20 +308,20 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
     case 7:                           // Option nur, wenn HL7 ... HL12a am Signal nicht genutzt werden, 
                                       // z.B. reduziertes EZMG-Ausfahrsignal mit nur Hp0, HL1, HL3a
                                       // Verdrahtung statt "Gelb oben" dann 2x Weiß für RA12
-      red_fadeIn = true;
-      red_fadeInSet = true;
-      red_fadeOut = false;
-      green_fadeOut = true;
-      green_fadeOutSet = true;
-      green_fadeIn = false;
-      ytop_fadeIn = true;
-      ytop_fadeInSet = true;
-      ytop_fadeOut = false;
-      ybot_fadeOut = true;
-      ybot_fadeOutSet = true;
-      ybot_fadeIn = false;
+      out1_fadeIn = true;
+      out1_fadeInSet = true;
+      out1_fadeOut = false;
+      out2_fadeOut = true;
+      out2_fadeOutSet = true;
+      out2_fadeIn = false;
+      out3_fadeIn = true;
+      out3_fadeInSet = true;
+      out3_fadeOut = false;
+      out4_fadeOut = true;
+      out4_fadeOutSet = true;
+      out4_fadeIn = false;
       fadePause = true;
-      Blink_ytop = false;
+      Blink_out3 = false;
 
       #if defined DEBUG  
         Serial.println("Aspect 7");
@@ -329,20 +329,20 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       break;
 
     default:
-      red_fadeOut = true;
-      red_fadeOutSet = true;
-      red_fadeIn = false;
-      green_fadeOut = true;
-      green_fadeOutSet = true;
-      green_fadeIn = false;
-      ytop_fadeOut = true;
-      ytop_fadeOutSet = true;
-      ytop_fadeIn = false;
-      ybot_fadeOut = true;
-      ybot_fadeOutSet = true;
-      ybot_fadeIn = false;
+      out1_fadeOut = true;
+      out1_fadeOutSet = true;
+      out1_fadeIn = false;
+      out2_fadeOut = true;
+      out2_fadeOutSet = true;
+      out2_fadeIn = false;
+      out3_fadeOut = true;
+      out3_fadeOutSet = true;
+      out3_fadeIn = false;
+      out4_fadeOut = true;
+      out4_fadeOutSet = true;
+      out4_fadeIn = false;
       fadePause = true;
-      Blink_ytop = false;
+      Blink_out3 = false;
       
       #if defined DEBUG  
         Serial.println("Aspect default");
@@ -359,16 +359,16 @@ CVPair FactoryDefaultCVs[] = {
   {CV_29_CONFIG, CV29_ACCESSORY_DECODER | CV29_OUTPUT_ADDRESS_MODE},
   {CV_BLINK_PERIOD,13},
   {CV_BLINK_PERC,35},
-  {CV_FADE_RED,15},
-  {CV_FADE_GREEN,15},
-  {CV_FADE_YTOP,15},
-  {CV_FADE_YBOT,15},
+  {CV_FADE_OUT1,15},
+  {CV_FADE_OUT2,15},
+  {CV_FADE_OUT3,15},
+  {CV_FADE_OUT4,15},
   {CV_FADE_PAUSE_CFG,0x03},
   {CV_FADE_PAUSE,10},
-  {CV_RED_DIM,15},
-  {CV_GREEN_DIM,15},
-  {CV_YTOP_DIM,15},
-  {CV_YBOT_DIM,15},
+  {CV_OUT1_DIM,15},
+  {CV_OUT2_DIM,15},
+  {CV_OUT3_DIM,15},
+  {CV_OUT4_DIM,15},
 };
 
 //uint8_t FactoryDefaultCVIndex = sizeof(FactoryDefaultCVs) / sizeof(CVPair);
@@ -406,114 +406,114 @@ void FadePause() {
   } else fadePauseSet=true;
 }
 
-void red_FadeIn() {
-  //red fadeIn PORT1
-  if (((currentPortMillis-startBlinkMillis) % cv_fade_red) == 0) {
-    if ((red_fade < cv_red_dim) && red_fadeInSet) {
-      red_fade++;
-      analogWrite(PORT_RED,red_fade<<3);
-      red_fadeInSet = false;
+void out1_FadeIn() {
+  //red fadeIn OUT1
+  if (((currentPortMillis-startBlinkMillis) % cv_fade_out1) == 0) {
+    if ((out1_fade < cv_out1_dim) && out1_fadeInSet) {
+      out1_fade++;
+      analogWrite(PORT_OUT1,out1_fade<<3);
+      out1_fadeInSet = false;
     } else {
-      if (red_fade >= cv_red_dim) {
-        red_fadeIn = false;
+      if (out1_fade >= cv_out1_dim) {
+        out1_fadeIn = false;
       }
     }
-  } else red_fadeInSet=true;
+  } else out1_fadeInSet=true;
 }
 
-void red_FadeOut() {
-  //red fadeOut PORT1
-  if (((currentPortMillis-startBlinkMillis) % cv_fade_red) == 0) {
-    if ((red_fade > 0) && red_fadeOutSet) {
-      red_fade--;
-      red_fadeOutSet = false;
-      analogWrite(PORT_RED,red_fade<<3);
+void out1_FadeOut() {
+  //red fadeOut OUT1
+  if (((currentPortMillis-startBlinkMillis) % cv_fade_out1) == 0) {
+    if ((out1_fade > 0) && out1_fadeOutSet) {
+      out1_fade--;
+      out1_fadeOutSet = false;
+      analogWrite(PORT_OUT1,out1_fade<<3);
     } else {
-      if (red_fade == 0) red_fadeOut = false;
+      if (out1_fade == 0) out1_fadeOut = false;
     }
-  } else red_fadeOutSet=true;
+  } else out1_fadeOutSet=true;
 }
 
-void green_FadeIn() {
-  //green fadeIn PORT2
-  if (((currentPortMillis-startBlinkMillis) % cv_fade_green) == 0) {
-    if ((green_fade < cv_green_dim) && green_fadeInSet) {
-      green_fade++;
-      green_fadeInSet = false;
-      analogWrite(PORT_GREEN,green_fade<<3);
+void out2_FadeIn() {
+  //green fadeIn OUT2
+  if (((currentPortMillis-startBlinkMillis) % cv_fade_out2) == 0) {
+    if ((out2_fade < cv_out2_dim) && out2_fadeInSet) {
+      out2_fade++;
+      out2_fadeInSet = false;
+      analogWrite(PORT_OUT2,out2_fade<<3);
     } else {
-      if (green_fade >= cv_green_dim) {
-        green_fadeIn = false;
+      if (out2_fade >= cv_out2_dim) {
+        out2_fadeIn = false;
       }
     }
-  } else green_fadeInSet=true;
+  } else out2_fadeInSet=true;
 }
 
-void green_FadeOut() {
-  //green fadeOut PORT2
-  if (((currentPortMillis-startBlinkMillis) % cv_fade_green) == 0) {
-    if ((green_fade > 0) && green_fadeOutSet) {
-      green_fade--;
-      green_fadeOutSet = false;
-      analogWrite(PORT_GREEN,green_fade<<3);
+void out2_FadeOut() {
+  //green fadeOut OUT2
+  if (((currentPortMillis-startBlinkMillis) % cv_fade_out2) == 0) {
+    if ((out2_fade > 0) && out2_fadeOutSet) {
+      out2_fade--;
+      out2_fadeOutSet = false;
+      analogWrite(PORT_OUT2,out2_fade<<3);
     } else {
-      if (green_fade == 0) green_fadeOut = false;
+      if (out2_fade == 0) out2_fadeOut = false;
     }
-  } else green_fadeOutSet=true;
+  } else out2_fadeOutSet=true;
 }
 
-void ytop_FadeIn() {
-  //yellow top fadeIn PORT3
-  if (((currentPortMillis-startBlinkMillis) % cv_fade_ytop) == 0) {
-    if ((ytop_fade < cv_ytop_dim) && ytop_fadeInSet) {
-      ytop_fade++;
-      ytop_fadeInSet = false;
-      analogWrite(PORT_YTOP,ytop_fade<<3);
+void out3_FadeIn() {
+  //yellow top fadeIn OUT3
+  if (((currentPortMillis-startBlinkMillis) % cv_fade_out3) == 0) {
+    if ((out3_fade < cv_out3_dim) && out3_fadeInSet) {
+      out3_fade++;
+      out3_fadeInSet = false;
+      analogWrite(PORT_OUT3,out3_fade<<3);
     } else {
-      if (ytop_fade >= cv_ytop_dim) {
-        ytop_fadeIn = false;
+      if (out3_fade >= cv_out3_dim) {
+        out3_fadeIn = false;
       }
     }
-  } else ytop_fadeInSet=true;
+  } else out3_fadeInSet=true;
 }
 
-void ytop_FadeOut() {
-  //yellow top_fadeOut PORT3
-  if (((currentPortMillis-startBlinkMillis) % cv_fade_ytop) == 0) {
-    if ((ytop_fade > 0) && ytop_fadeOutSet) {
-      ytop_fade--;
-      ytop_fadeOutSet = false;
-      analogWrite(PORT_YTOP,ytop_fade<<3);
+void out3_FadeOut() {
+  //yellow top_fadeOut OUT3
+  if (((currentPortMillis-startBlinkMillis) % cv_fade_out3) == 0) {
+    if ((out3_fade > 0) && out3_fadeOutSet) {
+      out3_fade--;
+      out3_fadeOutSet = false;
+      analogWrite(PORT_OUT3,out3_fade<<3);
     } else {
-      if (ytop_fade == 0) ytop_fadeOut = false;
+      if (out3_fade == 0) out3_fadeOut = false;
     }
-  } else ytop_fadeOutSet=true;
+  } else out3_fadeOutSet=true;
 }
 
-void ybot_FadeIn() {
-  //yellow buttom fadeIn PORT4
-  if (((currentPortMillis-startBlinkMillis) % cv_fade_ybot) == 0) {
-    if ((ybot_fade < cv_ybot_dim) && ybot_fadeInSet) {
-      ybot_fade++;
-      ybot_fadeInSet = false;
+void out4_FadeIn() {
+  //yellow buttom fadeIn OUT4
+  if (((currentPortMillis-startBlinkMillis) % cv_fade_out4) == 0) {
+    if ((out4_fade < cv_out4_dim) && out4_fadeInSet) {
+      out4_fade++;
+      out4_fadeInSet = false;
     } else {
-      if (ybot_fade >= cv_ybot_dim) {
-        ybot_fadeIn = false;
+      if (out4_fade >= cv_out4_dim) {
+        out4_fadeIn = false;
       }
     }
-  } else ybot_fadeInSet=true;
+  } else out4_fadeInSet=true;
 }
 
-void ybot_FadeOut() {
-  //yellow buttom fadeOut PORT4
-  if (((currentPortMillis-startBlinkMillis) % cv_fade_ybot) == 0) {
-    if ((ybot_fade > 0) && ybot_fadeOutSet) {
-      ybot_fade--;
-      ybot_fadeOutSet = false;
+void out4_FadeOut() {
+  //yellow buttom fadeOut OUT4
+  if (((currentPortMillis-startBlinkMillis) % cv_fade_out4) == 0) {
+    if ((out4_fade > 0) && out4_fadeOutSet) {
+      out4_fade--;
+      out4_fadeOutSet = false;
     } else {
-      if (ybot_fade == 0) ybot_fadeOut = false;
+      if (out4_fade == 0) out4_fadeOut = false;
     }
-  } else ybot_fadeOutSet=true;
+  } else out4_fadeOutSet=true;
 }
 
 void setup() {
@@ -548,17 +548,17 @@ void setup() {
   pinMode(DCC_ACK_PIN, OUTPUT);
   digitalWrite(DCC_ACK_PIN, LOW);
 
-  pinMode(PORT_RED, OUTPUT);
-  pinMode(PORT_GREEN, OUTPUT);
-  pinMode(PORT_YTOP, OUTPUT);
-  pinMode(PORT_YBOT, OUTPUT);
+  pinMode(PORT_OUT1, OUTPUT);
+  pinMode(PORT_OUT2, OUTPUT);
+  pinMode(PORT_OUT3, OUTPUT);
+  pinMode(PORT_OUT4, OUTPUT);
   #if defined UNO
     pinMode(PROG_NEXT_PIN, INPUT_PULLUP);
   #endif
-  digitalWrite(PORT_RED, LOW);
-  digitalWrite(PORT_GREEN, LOW);
-  digitalWrite(PORT_YTOP, LOW);
-  digitalWrite(PORT_YBOT, LOW);
+  digitalWrite(PORT_OUT1, LOW);
+  digitalWrite(PORT_OUT2, LOW);
+  digitalWrite(PORT_OUT3, LOW);
+  digitalWrite(PORT_OUT4, LOW);
 
   cv_blink_period = (Dcc.getCV(CV_BLINK_PERIOD) & 0x1F);
 
@@ -566,21 +566,21 @@ void setup() {
   if (cv_blink_perc < 2) cv_blink_perc = 2;
   if (cv_blink_perc > 98) cv_blink_perc = 98;
 
-  cv_fade_red = Dcc.getCV(CV_FADE_RED);
-  if (cv_fade_red < 2) cv_fade_red = 2;
-  if (cv_fade_red > 31) cv_fade_red = 31;
+  cv_fade_out1 = Dcc.getCV(CV_FADE_OUT1);
+  if (cv_fade_out1 < 2) cv_fade_out1 = 2;
+  if (cv_fade_out1 > 31) cv_fade_out1 = 31;
 
-  cv_fade_green = Dcc.getCV(CV_FADE_GREEN);
-  if (cv_fade_green < 2) cv_fade_green = 2;
-  if (cv_fade_green > 31) cv_fade_green = 31;
+  cv_fade_out2 = Dcc.getCV(CV_FADE_OUT2);
+  if (cv_fade_out2 < 2) cv_fade_out2 = 2;
+  if (cv_fade_out2 > 31) cv_fade_out2 = 31;
 
-  cv_fade_ytop = Dcc.getCV(CV_FADE_YTOP);
-  if (cv_fade_ytop < 2) cv_fade_ytop = 2;
-  if (cv_fade_ytop > 31) cv_fade_ytop = 31;
+  cv_fade_out3 = Dcc.getCV(CV_FADE_OUT3);
+  if (cv_fade_out3 < 2) cv_fade_out3 = 2;
+  if (cv_fade_out3 > 31) cv_fade_out3 = 31;
 
-  cv_fade_ybot = Dcc.getCV(CV_FADE_YBOT);
-  if (cv_fade_ybot < 2) cv_fade_ybot = 2;
-  if (cv_fade_ybot > 31) cv_fade_ybot = 31;
+  cv_fade_out4 = Dcc.getCV(CV_FADE_OUT4);
+  if (cv_fade_out4 < 2) cv_fade_out4 = 2;
+  if (cv_fade_out4 > 31) cv_fade_out4 = 31;
 
   cv_fade_pause = Dcc.getCV(CV_FADE_PAUSE);
   if (cv_fade_pause < 1) cv_fade_pause = 1;
@@ -588,21 +588,21 @@ void setup() {
 
   cv_fade_pause_cfg = Dcc.getCV(CV_FADE_PAUSE_CFG);
 
-  cv_red_dim = Dcc.getCV(CV_RED_DIM);
-  if (cv_red_dim < 1) cv_red_dim = 1;
-  if (cv_red_dim > 31) cv_red_dim = 31;
+  cv_out1_dim = Dcc.getCV(CV_OUT1_DIM);
+  if (cv_out1_dim < 1) cv_out1_dim = 1;
+  if (cv_out1_dim > 31) cv_out1_dim = 31;
 
-  cv_green_dim = Dcc.getCV(CV_GREEN_DIM);
-  if (cv_green_dim < 1) cv_green_dim = 1;
-  if (cv_green_dim > 31) cv_green_dim = 31;
+  cv_out2_dim = Dcc.getCV(CV_OUT2_DIM);
+  if (cv_out2_dim < 1) cv_out2_dim = 1;
+  if (cv_out2_dim > 31) cv_out2_dim = 31;
 
-  cv_ytop_dim = Dcc.getCV(CV_YTOP_DIM);
-  if (cv_ytop_dim < 1) cv_ytop_dim = 1;
-  if (cv_ytop_dim > 31) cv_ytop_dim = 31;
+  cv_out3_dim = Dcc.getCV(CV_OUT3_DIM);
+  if (cv_out3_dim < 1) cv_out3_dim = 1;
+  if (cv_out3_dim > 31) cv_out3_dim = 31;
 
-  cv_ybot_dim = Dcc.getCV(CV_YBOT_DIM);
-  if (cv_ybot_dim < 1) cv_ybot_dim = 1;
-  if (cv_ybot_dim > 31) cv_ybot_dim = 31;
+  cv_out4_dim = Dcc.getCV(CV_OUT4_DIM);
+  if (cv_out4_dim < 1) cv_out4_dim = 1;
+  if (cv_out4_dim > 31) cv_out4_dim = 31;
 
   pinMode(DCC_PIN, INPUT);          // DCC Eingang
 
@@ -646,53 +646,53 @@ void loop() {
   if(fadePause) FadePause();
 
   if ((cv_fade_pause_cfg & 0x01) == 0) {
-    if(red_fadeIn && !fadePause) red_FadeIn();
+    if(out1_fadeIn && !fadePause) out1_FadeIn();
   } else {
-    if(red_fadeIn) red_FadeIn();      // The red light comes on immediately after the command without pause
+    if(out1_fadeIn) out1_FadeIn();      // The red light comes on immediately after the command without pause
   }
-  if(red_fadeOut) red_FadeOut();
+  if(out1_fadeOut) out1_FadeOut();
 
-  if(green_fadeIn && !fadePause) green_FadeIn();
+  if(out2_fadeIn && !fadePause) out2_FadeIn();
   if ((cv_fade_pause_cfg & 0x02) == 0) {
-    if(green_fadeOut) green_FadeOut();
+    if(out2_fadeOut) out2_FadeOut();
   } else {
-    if(green_fadeOut && !red_fadeIn) green_FadeOut();
+    if(out2_fadeOut && !out1_fadeIn) out2_FadeOut();
   }
 
-  if(ytop_fadeIn && !fadePause) ytop_FadeIn();
+  if(out3_fadeIn && !fadePause) out3_FadeIn();
   if ((cv_fade_pause_cfg & 0x02) == 0) {
-    if(ytop_fadeOut) ytop_FadeOut();
+    if(out3_fadeOut) out3_FadeOut();
   } else {
-    if(ytop_fadeOut && !red_fadeIn) ytop_FadeOut();
+    if(out3_fadeOut && !out1_fadeIn) out3_FadeOut();
   }
 
-  if(ybot_fadeIn && !fadePause) ybot_FadeIn();
+  if(out4_fadeIn && !fadePause) out4_FadeIn();
   if ((cv_fade_pause_cfg & 0x02) == 0) {
-    if(ybot_fadeOut) ybot_FadeOut();
+    if(out4_fadeOut) out4_FadeOut();
   } else {
-    if(ybot_fadeOut && !red_fadeIn) ybot_FadeOut();
+    if(out4_fadeOut && !out1_fadeIn) out4_FadeOut();
   }
 
-  // Soft-Dim PORT4 (PB3)
-  if (ybot_dim_pos < 31) ybot_dim_pos+=1; else ybot_dim_pos = 0;
-  if (ybot_dim_pos < ybot_fade) digitalWrite(PORT_YBOT, 1); 
-  else digitalWrite(PORT_YBOT, 0);
+  // Soft-Dim OUT4 (PB3)
+  if (out4_dim_pos < 31) out4_dim_pos+=1; else out4_dim_pos = 0;
+  if (out4_dim_pos < out4_fade) digitalWrite(PORT_OUT4, 1); 
+  else digitalWrite(PORT_OUT4, 0);
 
-  // BlinkPort PORT3 yellow top
-  if (cv_blink_period && Blink_ytop) {
+  // BlinkPort OUT3 yellow top
+  if (cv_blink_period && Blink_out3) {
     if (((currentPortMillis-startBlinkMillis) % (cv_blink_period*100)) < cv_blink_period*cv_blink_perc) {
-      if (ytop_on == false) {
-        ytop_fadeIn = true;
-        ytop_fadeInSet = true;
-        ytop_fadeOut = false;
-        ytop_on = true;
+      if (out3_on == false) {
+        out3_fadeIn = true;
+        out3_fadeInSet = true;
+        out3_fadeOut = false;
+        out3_on = true;
       }
     } else {
-      if (ytop_on == true) {
-        ytop_fadeOut = true;
-        ytop_fadeOutSet = true;
-        ytop_fadeIn = false;
-        ytop_on = false;
+      if (out3_on == true) {
+        out3_fadeOut = true;
+        out3_fadeOutSet = true;
+        out3_fadeIn = false;
+        out3_on = false;
       }
     }
   }
