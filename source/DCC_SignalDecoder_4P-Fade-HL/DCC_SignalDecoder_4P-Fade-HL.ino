@@ -109,7 +109,10 @@ struct CVPair {
 
 int AccDecoderAddr, cv_blink_period;
 bool ProgModeActivated = false;
+bool Blink_out1 = false;
+bool Blink_out2 = false;
 bool Blink_out3 = false;
+bool Blink_out4 = false;
 uint8_t cv_out1_dim, cv_out2_dim, cv_out3_dim, cv_out4_dim;
 uint8_t cv_fade_out1, cv_fade_out2, cv_fade_out3, cv_fade_out4, cv_fade_pause;
 uint8_t out1_fade_pause, out2_fade_pause, out3_fade_pause, out4_fade_pause;
@@ -122,6 +125,7 @@ bool fadePause = false;
 bool out1_on = false;
 bool out2_on = false;
 bool out3_on = false;
+bool out4_on = false;
 bool out1_fadeIn = false;
 bool out1_fadeOut = false;
 bool out2_fadeIn = false;
@@ -170,6 +174,9 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       out4_fadeOutSet = true;
       out4_fadeIn = false;
       fadePause = true;
+      Blink_out1 = false;
+      Blink_out2 = false;
+      Blink_out4 = false;
       Blink_out3 = false;
 
       #if defined DEBUG  
@@ -191,6 +198,9 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       out4_fadeOutSet = true;
       out4_fadeIn = false;
       fadePause = true;
+      Blink_out1 = false;
+      Blink_out2 = false;
+      Blink_out4 = false;
       Blink_out3 = false;
 
       #if defined DEBUG  
@@ -212,6 +222,9 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       out4_fadeInSet = true;
       out4_fadeOut = false;
       fadePause = true;
+      Blink_out1 = false;
+      Blink_out2 = false;
+      Blink_out4 = false;
       Blink_out3 = false;
 
       #if defined DEBUG  
@@ -233,6 +246,9 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       out4_fadeOutSet = true;
       out4_fadeIn = false;
       fadePause = true;
+      Blink_out1 = false;
+      Blink_out2 = false;
+      Blink_out4 = false;
       Blink_out3 = true;
       out3_on = false;                // damit beim ersten Aufruf im Blinkmode "ein" erfolgt
 
@@ -255,6 +271,9 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       out4_fadeInSet = true;
       out4_fadeOut = false;
       fadePause = true;
+      Blink_out1 = false;
+      Blink_out2 = false;
+      Blink_out4 = false;
       Blink_out3 = true;
       out3_on = false;                // damit beim ersten Aufruf im Blinkmode "ein" erfolgt
 
@@ -277,6 +296,9 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       out4_fadeOutSet = true;
       out4_fadeIn = false;
       fadePause = true;
+      Blink_out1 = false;
+      Blink_out2 = false;
+      Blink_out4 = false;
       Blink_out3 = false;
 
       #if defined DEBUG  
@@ -298,6 +320,9 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       out4_fadeInSet = true;
       out4_fadeOut = false;
       fadePause = true;
+      Blink_out1 = false;
+      Blink_out2 = false;
+      Blink_out4 = false;
       Blink_out3 = false;
 
       #if defined DEBUG  
@@ -321,6 +346,9 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       out4_fadeOutSet = true;
       out4_fadeIn = false;
       fadePause = true;
+      Blink_out1 = false;
+      Blink_out2 = false;
+      Blink_out4 = false;
       Blink_out3 = false;
 
       #if defined DEBUG  
@@ -342,6 +370,9 @@ void Run_HL_ASPECT( uint16_t SIGN_addr, uint8_t SIGN_aspect ) {
       out4_fadeOutSet = true;
       out4_fadeIn = false;
       fadePause = true;
+      Blink_out1 = false;
+      Blink_out2 = false;
+      Blink_out4 = false;
       Blink_out3 = false;
       
       #if defined DEBUG  
@@ -678,6 +709,42 @@ void loop() {
   if (out4_dim_pos < out4_fade) digitalWrite(PORT_OUT4, 1); 
   else digitalWrite(PORT_OUT4, 0);
 
+  // BlinkPort PORT1 red
+  if (cv_blink_period && Blink_out1) {
+    if (((currentPortMillis-startBlinkMillis) % (cv_blink_period*100)) < cv_blink_period*cv_blink_perc) {
+      if (out1_on == false) {
+        out1_fadeIn = true;
+        out1_fadeInSet = true;
+        out1_fadeOut = false;
+        out1_on = true;
+      }
+    } else {
+      if (out1_on == true) {
+        out1_fadeOut = true;
+        out1_fadeOutSet = true;
+        out1_fadeIn = false;
+        out1_on = false;
+      }
+    }
+  }
+  // BlinkPort PORT2 green
+  if (cv_blink_period && Blink_out2) {
+    if (((currentPortMillis-startBlinkMillis) % (cv_blink_period*100)) < cv_blink_period*cv_blink_perc) {
+      if (out2_on == false) {
+        out2_fadeIn = true;
+        out2_fadeInSet = true;
+        out2_fadeOut = false;
+        out2_on = true;
+      }
+    } else {
+      if (out2_on == true) {
+        out2_fadeOut = true;
+        out2_fadeOutSet = true;
+        out2_fadeIn = false;
+        out2_on = false;
+      }
+    }
+  }
   // BlinkPort OUT3 yellow top
   if (cv_blink_period && Blink_out3) {
     if (((currentPortMillis-startBlinkMillis) % (cv_blink_period*100)) < cv_blink_period*cv_blink_perc) {
@@ -693,6 +760,24 @@ void loop() {
         out3_fadeOutSet = true;
         out3_fadeIn = false;
         out3_on = false;
+      }
+    }
+  }
+  // BlinkPort OUT3 yellow bot
+  if (cv_blink_period && Blink_out4) {
+    if (((currentPortMillis-startBlinkMillis) % (cv_blink_period*100)) < cv_blink_period*cv_blink_perc) {
+      if (out4_on == false) {
+        out4_fadeIn = true;
+        out4_fadeInSet = true;
+        out4_fadeOut = false;
+        out4_on = true;
+      }
+    } else {
+      if (out4_on == true) {
+        out4_fadeOut = true;
+        out4_fadeOutSet = true;
+        out4_fadeIn = false;
+        out4_on = false;
       }
     }
   }
