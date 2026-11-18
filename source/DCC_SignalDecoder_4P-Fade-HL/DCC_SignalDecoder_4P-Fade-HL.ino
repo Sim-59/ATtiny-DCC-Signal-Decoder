@@ -763,7 +763,7 @@ void loop() {
       }
     }
   }
-  // BlinkPort OUT3 yellow bot
+  // BlinkPort OUT4 yellow bot
   if (cv_blink_period && Blink_out4) {
     if (((currentPortMillis-startBlinkMillis) % (cv_blink_period*100)) < cv_blink_period*cv_blink_perc) {
       if (out4_on == false) {
