@@ -2,7 +2,7 @@
 ![description](https://github.com/Sim-59/ATtiny-DCC-Signal-Decoder/blob/main/images/PCB_MuFuDec_01k.png)
 
 ## Überblick
-Der **DCC-Signaldekoder** dient der Ansteuerung von Signalen mit den erweiterten Zubehör-Protokoll nach nach [NMRA s-9.2.1](https://www.nmra.org/sites/default/files/standards/sandrp/DCC/S/s-9.2.1_dcc_extended_packet_formats.pdf), Abs. 2.4.2.
+Der **DCC-Signaldekoder** dient der Ansteuerung von Signalen mit den erweiterten Zubehör-Protokoll nach nach [NMRA s-9.2.1](https://www.nmra.org/sites/default/files/standards/sandrp/DCC/S/s-9.2.1_dcc_extended_packet_formats.pdf), Abs. 2.4.2. Entsprechend dieses Protokolls sind 32 Signalbilder an einer Decoderadresse möglich. 3 Bits der 8 verfügbaren sind für andere Zwecke definiert.
 ### Autor
 [Michael Hochmuth](https://github.com/Sim-59)
 
