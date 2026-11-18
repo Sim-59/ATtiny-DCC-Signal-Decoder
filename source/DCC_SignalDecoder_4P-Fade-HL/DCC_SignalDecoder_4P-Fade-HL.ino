@@ -1,5 +1,5 @@
 // DCC extended Accessories decoder for simple HL-signals (EZMG) of DR
-// (c) Michael Hochmuth https://github.com/Sim-59                                2026-11-03
+// (c) Michael Hochmuth https://github.com/Sim-59                                2026-11-18
 // 4 output ports
 // CV reading at programming track (PT) is possible with a temporarily circuit for 60 mA load at one port
 //
