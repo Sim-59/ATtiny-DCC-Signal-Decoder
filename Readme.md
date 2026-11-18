@@ -1,11 +1,15 @@
 # DCC-Signaldekoder mit ATtiny85 
 ![description](https://github.com/Sim-59/ATtiny-DCC-Signal-Decoder/blob/main/images/PCB_MuFuDec_01k.png)
+
+## Überblick
+Der **DCC-Signaldekoder** dient der Ansteuerung von Signalen mit den erweiterten Zubehör-Protokoll nach nach [NMRA s-9.2.1](https://www.nmra.org/sites/default/files/standards/sandrp/DCC/S/s-9.2.1_dcc_extended_packet_formats.pdf), Abs. 2.4.2.
+### Autor
+[Michael Hochmuth](https://github.com/Sim-59)
+
 ## Hardware
 Aufbauend auf dieser [Zusatzplatine](http://simandit.de/simwiki/doku.php?id=modellbahn:umbauten:dcc-dekoder#zusatzplatine_4-port-variante) zum ATtiny85-Digispark-Board wurde eine neue Version entwickelt. Diese [Leiterplattenvariante](https://simandit.de/simwiki/doku.php?id=modellbahn:umbauten:dcc-dekoder#multi-funktions-dekoder_4-port) für den DCC-Dekoder enthält auch den ATtiny85 und dessen Spannungsversorgung.\
-Mit Transistoren für die Funktionsausgänge wird die gleichgerichtete Gleisspannung geschaltet. Zur Erzeugung des ACK-Signals ist ein Anschluss vorgesehen, der vorübergehend zum Lesens der CVs durch einen Schalter oder Jumper überbrückt werden kann. Es wird dann ein zusätzlicher Lastwiderstand an diesem Port zugeschaltet. CV-Schreiben ist auch ohne diese Zuschaltung möglich.
-
-Diese Variante muss über ISP mit einem separaten Programmer programmiert werden.\
-Eine gute Informationsquelle zur Programmierung des ATtiny85 ist [Wolles Elektronikkiste](https://wolles-elektronikkiste.de/attiny-mit-arduino-code-programmieren). 
+Mit Transistoren für die Funktionsausgänge wird die gleichgerichtete Gleisspannung geschaltet. Die Funktionsausgänge unterstützen Dimmen und Fade-In und FadeOut sowie Blinken.\
+Zur Erzeugung des ACK-Signals ist ein Anschluss vorgesehen, der vorübergehend zum Lesens der CVs durch einen Schalter oder Jumper überbrückt werden kann. Es wird dann ein zusätzlicher Lastwiderstand an diesem Port zugeschaltet. CV-Schreiben ist auch ohne diese Zuschaltung möglich.
 
 ## Software
 Der Arduino-Sketch verwendet die [NmraDcc-Bibliothek](https://github.com/mrrwa/NmraDcc) von [MRRWA](http://mrrwa.org/), die über die Arduino-Bibliotheksverwaltung eingebunden werden kann.
@@ -26,4 +30,11 @@ Bei EZMG-Ausfahrsignalen sind die Signalbilder meist reduziert ausgeführt, nur 
 
 Die Helligkeitseinstellung der Lichtquellen an 3 Ports ist mit PWM-Dimmen des ATtiny realisiert, bei PB3 wird das PWM in der Loop-Schleife realisiert.
 Für das langsame Ein-/Ausschalten (Fade-In und Fade-Out) der Lichtquellen sind weitere Konfigurationsvariablen definiert.
+
+## Installation
+Die Platine wird in der Arduino-IDE mit einem ISP-Programmer programmiert. Dafür sind an einer Seite Kontaktflächen angeordnet. Als erstes wird ein Bootloader programmiert. Die Vorgehensweise ist auf dieser [Wiki-Seite](https://simandit.de/simwiki/doku.php?id=weiteres:arduino:bootloader#atmega328) beschrieben.
+Weitere Informationen sind in der Dokumentation beschrieben.
+
+Eine gute Informationsquelle zur Programmierung des ATtiny85 ist [Wolles Elektronikkiste](https://wolles-elektronikkiste.de/attiny-mit-arduino-code-programmieren). 
+
 
